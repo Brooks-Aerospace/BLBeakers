@@ -19,10 +19,8 @@ and download locations).
 --------------------------------------------
 ![VSPlogo](OpenVSP/openvsplogo.png)
 # OpenVSP
---------------------------------------------
 stuff here
 
 ![DFDClogo](DFDC/dfdclogo.JPG)
 # DFDC
---------------------------------------------
 stuff here
