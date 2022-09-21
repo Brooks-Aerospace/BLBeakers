@@ -17,5 +17,5 @@ respective folders for detailed information (including licensing info
 and download locations).
 
 # OpenVSP
-
+[logo](OpenVSP/openvsplogo.png)
 # DFDC
