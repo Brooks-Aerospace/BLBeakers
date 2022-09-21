@@ -5,7 +5,7 @@ Welcome to the Brooks Aero Design Suite!
 Built by: slade
 
 This is an open-source suite of aerospace design tools and examples.
-Please see [the license](license.md) for detailed info on usage.
+Please see [the license](LICENSE.md) for detailed info on usage.
 
 This suite will contain multiple aerospace design tools, setup guides,
 and usage examples.
