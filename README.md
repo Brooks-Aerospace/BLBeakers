@@ -16,6 +16,9 @@ Below are the descriptions of each tool. See the <readme> in their
 respective folders for detailed information (including licensing info
 and download locations).
 
-# ---------=========|||||||||=========---------
+--------------------------------------------
 ![VSPlogo](OpenVSP/openvsplogo.png)
+# OpenVSP
+
+
 # DFDC
