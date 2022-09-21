@@ -23,7 +23,7 @@ and download locations).
 stuff here
 --------------------------------------------
 
-![DFDClogo](DFDC/dfdclogo.jpg)
+![DFDClogo](DFDC/dfdclogo.JPG)
 # DFDC
 --------------------------------------------
 stuff here
