@@ -3,7 +3,7 @@
 ---=== Welcome to the Brooks Aero Design Suite! ===---
 
 
-
+--------------------------------------------
 This is an open-source suite of aerospace design tools and examples.
 Please see [the license](LICENSE.md) for detailed info on usage.
 
