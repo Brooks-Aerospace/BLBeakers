@@ -1,7 +1,6 @@
 # Brooks Aero Design Suite
 
----=== Welcome to the Brooks Aero Design Suite! ===---
-
+---=== Welcome to the Brooks Aerospace Design Suite! ===---
 
 --------------------------------------------
 This is an open-source suite of aerospace design tools and examples.
@@ -15,12 +14,12 @@ the user must obtain a license on their own to use it.
 Below are the descriptions of each tool. See the <readme> in their
 respective folders for detailed information (including licensing info
 and download locations).
-
---------------------------------------------
-![VSPlogo](OpenVSP/openvsplogo.png)
-# OpenVSP
+                                      
+### OpenVSP
+stuff here
+                     
+### DFDC
 stuff here
 
-![DFDClogo](DFDC/dfdclogo.JPG)
-# DFDC
+### Flightstream
 stuff here
