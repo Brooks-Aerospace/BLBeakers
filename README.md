@@ -20,7 +20,7 @@ and download locations).
 #### Description:
 OpenVSP (vehicle sketch pad) is a low-fidelity, open source, parametric
 aircraft geometry tool. It can be used to generate models of aircraft
-and perform simple aerodynamic analysis on them.       
+and perform simple parameterized analysis and aero simulations on them.       
 
 #### BADS Features:     
 
