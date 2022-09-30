@@ -22,7 +22,18 @@ OpenVSP (vehicle sketch pad) is a low-fidelity, open source, parametric
 aircraft geometry tool. It can be used to generate models of aircraft
 and perform simple parameterized analysis and aero simulations on them.       
 
-#### BADS Features:     
+#### BADS Features: 
+- vehicle features import
+- weight and balance/CG calculation
+- tail/canard/wing sizing
+    - simple and complex wing import
+
+## OpenAeroVTOL
+[OAV Readme](OAV/README.md)
+#### Description:
+
+#### BADS Features:
+- software download and GUI easy zip
 
 ## DFDC
 [DFDC Readme](DFDC/README.md)
@@ -32,6 +43,7 @@ rotor design and analysis. It can be used to generate geometries of ducted
 rotors and perform analysis and geometric development on them.
 
 #### BADS Features:
+coming soon
 
 ## Flightstream
 [Flightstream Readme](Flightstream/README.MD)
@@ -42,3 +54,4 @@ accuracy in a fraction of the time of CFD. It supports CAD geometry and has
 built in meshing for ease of setup.
 
 #### BADS Features:
+coming soon
