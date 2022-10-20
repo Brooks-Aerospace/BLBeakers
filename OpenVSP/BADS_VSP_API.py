@@ -161,61 +161,8 @@ class simpleWing(VSPCraft):
             # do 4 series update
             vsp.ChangeXSecShape(vsp.GetXSecSurf(self.simpleWing, 1), 0, vsp.XS_FILE_AIRFOIL)
 
-            # update T/C
-            # vsp.SetParmVal(self.simpleWing, "ThickChord", "XSecCurve_0", rootNACAthick)
-
-            # update chord
-            # self.rootChord = rootChord
-            # xsec = vsp.GetXSec(xsecsurf, 0)
-            # xsecparam = vsp.GetXSecParm(xsec, "Root_Chord")
-            # vsp.SetParmVal(xsecparam, rootChord)
-
             vsp.Update()
             self.save(self.VSPFilename)
-            
-        # else:
-        #     # clean file paths
-        #     newRootFoil = VSPCraft._cleanPath(dirtyPath=newRootFoil)
-
-        #     # update to af file
-        #     vsp.ChangeXSecShape(vsp.GetXSecSurf(self.simpleWing, 0), 0, 12)
-
-        #     # update with af file
-
-        #     # update chord
-        #     self.rootChord = rootChord
-        #     vsp.SetParmVal(vsp.GetXSecParm(self.simpleWing, "Root_Chord", "XSec_1"), rootChord)
-
-        #     VSPCraft.vsp.update()
-
-        # update tip
-        # check NACA flag
-        # if tipNACA == True:
-        #     # do 4 series update
-        #     vsp.ChangeXSecShape(vsp.GetXSecSurf(self.simpleWing, 0), 1, 7)
-
-        #     # update T/C
-        #     vsp.SetParmVal(self.simpleWing, "ThickChord", "XSecCurve_1", tipNACAthick)
-
-        #     # update chord
-        #     self.tipChord = tipChord
-        #     vsp.SetParmVal(vsp.GetXSecParm(self.simpleWing, "Tip_Chord", "XSec_1"), tipChord)
-
-        #     vsp.update()
-        # else:
-        #     # clean file paths
-        #     newTipFoil = VSPCraft._cleanPath(dirtyPath=newTipFoil)
-
-        #     # update to af file
-        #     vsp.ChangeXSecShape(vsp.GetXSecSurf(self.simpleWing, 0), 1, 12)
-
-        #     # update with af file
-
-        #     # update chord
-        #     self.tipChord = tipChord
-        #     vsp.ChangeXSecShape(vsp.GetXSecSurf(self.simpleWing, 0), 0, 12)
-
-        #     vsp.update()
 
 
 # test script, only activates when this file is run
@@ -224,6 +171,18 @@ if __name__ == "__main__":
     print("running")
 
     testVehicle = VSPCraft(VSPFilename="~/BrooksAeroDesignSuite/OpenVSP/vspfiletest.vsp3")
+
+    wing1 = simpleWing(wingName="mainwing", weight=100.0)
+    testVehicle.save('vsp_output.vsp3')
+
+    # vsp tracks stuff, classes can be separate
+    # thx devon
+
+
+
+    testVehicle.addComponent(simpleWing(wingName="mainwing", weight=100.0))
+
+
     # fuse = testVehicle.craftObject(objectName="fuse", weight=100.0)
     wing = simpleWing(wingName="mainwing", weight=100.0)
     
