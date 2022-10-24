@@ -16,6 +16,11 @@ below for detailed information (including licensing info
 and download locations).
 
 ## Custom Tools
+#### Description:
+A collection of custom calculators and other tools developed by BADS.
+
+#### List of Tools:
+- Seaplane takeoff distance estimator
                                       
 ## OpenVSP
 [OpenVSP Readme](OpenVSP/README.md)
