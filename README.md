@@ -16,6 +16,7 @@ below for detailed information (including licensing info
 and download locations).
 
 ## Custom Tools
+[Custom Tools Readme](CUSTOM/README.md)
 #### Description:
 A collection of custom calculators and other tools developed by BADS.
 
