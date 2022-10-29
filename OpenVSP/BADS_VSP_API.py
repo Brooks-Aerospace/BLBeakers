@@ -40,44 +40,20 @@ class VSPCraft():
 
         # checks and opens VSP file
         vsp.VSPCheckSetup()
-        VSPFilename = self._cleanPath(dirtyPath=VSPFilename)
+        VSPFilename = VSPCraft._cleanPath(dirtyPath=VSPFilename)
         vsp.ReadVSPFile(file_name=VSPFilename)
-        self.VSPFilename = VSPFilename  
 
         return
 
-    class craftObject:
-        """
-        This class defines an object and its properties from a VSP model.
-        It can be any static object on the craft: engine, propeller, motor that
-        needs a defined weight, position, or more.
-        """
-
-        def __init__(self, objectName:str, weight:float):
-            """
-            This function creates the craft object.
-
-            :param_objectName: object title in VSP
-            :param_weight: weight of the object (w/o units)
-            """
-
-            # find named geometry
-            self.craftObject = VSPCraft._findGeom(geomName=objectName)
-
-            # sets craft object params
-            self.weight = weight
-            self.position = []
-            self.position.append(vsp.GetParmVal(self.craftObject,"X_Rel_Location","XForm"))
-            self.position.append(vsp.GetParmVal(self.craftObject,"Y_Rel_Location","XForm"))
-            self.position.append(vsp.GetParmVal(self.craftObject,"Z_Rel_Location","XForm"))
-
     @staticmethod
-    def save(filename:str):
+    def save():
         """
         This function saves the file.
         """
-        filename = VSPCraft._cleanPath(filename)
-        vsp.WriteVSPFile(filename)
+        #filename = VSPCraft._cleanPath(vsp.GetVSPFileName())
+        print("Saving file to: ")
+        print(vsp.GetVSPFileName())
+        vsp.WriteVSPFile(vsp.GetVSPFileName(), vsp.SET_ALL)
 
     @staticmethod
     def _findGeom(geomName:str):
@@ -106,7 +82,32 @@ class VSPCraft():
         # gimme a clean path!
         return cleanPath
 
-class simpleWing(VSPCraft):
+class craftObject:
+    """
+    This class defines an object and its properties from a VSP model.
+    It can be any static object on the craft: engine, propeller, motor that
+    needs a defined weight, position, or more.
+    """
+
+    def __init__(self, objectName:str, weight:float):
+        """
+        This function creates the craft object.
+
+        :param_objectName: object title in VSP
+        :param_weight: weight of the object (w/o units)
+        """
+
+        # find named geometry
+        self.craftObject = VSPCraft._findGeom(geomName=objectName)
+
+        # sets craft object params
+        self.weight = weight
+        self.position = []
+        self.position.append(vsp.GetParmVal(self.craftObject,"X_Rel_Location","XForm"))
+        self.position.append(vsp.GetParmVal(self.craftObject,"Y_Rel_Location","XForm"))
+        self.position.append(vsp.GetParmVal(self.craftObject,"Z_Rel_Location","XForm"))
+
+class simpleWing():
     """
     This class defines a simple (1 section) wing from a VSP model.
     It gathers the wing properties and can make changes to them.
@@ -159,10 +160,10 @@ class simpleWing(VSPCraft):
         # check NACA flag
         if rootNACA == True:
             # do 4 series update
-            vsp.ChangeXSecShape(vsp.GetXSecSurf(self.simpleWing, 1), 0, vsp.XS_FILE_AIRFOIL)
+            vsp.ChangeXSecShape(vsp.GetXSecSurf(self.simpleWing, 1), 0, vsp.XS_FOUR_SERIES)
 
             vsp.Update()
-            self.save(self.VSPFilename)
+            VSPCraft.save()
 
 
 # test script, only activates when this file is run
@@ -172,24 +173,9 @@ if __name__ == "__main__":
 
     testVehicle = VSPCraft(VSPFilename="~/BrooksAeroDesignSuite/OpenVSP/vspfiletest.vsp3")
 
-    wing1 = simpleWing(wingName="mainwing", weight=100.0)
-    testVehicle.save('vsp_output.vsp3')
+    wing = simpleWing(wingName="mainwing", weight=100)
 
-    # vsp tracks stuff, classes can be separate
-    # thx devon
-
-
-
-    testVehicle.addComponent(simpleWing(wingName="mainwing", weight=100.0))
-
-
-    # fuse = testVehicle.craftObject(objectName="fuse", weight=100.0)
-    wing = simpleWing(wingName="mainwing", weight=100.0)
-    
-    # print(fuse.weight)
-    # print(fuse.position)
-
-    wing.updateAirfoils(True, True, 8, 8, None, None, None, None)
+    wing.updateAirfoils(True, False, 12, None, None, None, None, None)
 
     # print(wing.area)
     # print(wing.dihedral)
