@@ -90,8 +90,8 @@ class craftObject:
         """
         This function creates the craft object.
 
-        :param_objectName: object title in VSP
-        :param_weight: weight of the object (w/o units)
+        :param objectName: object title in VSP
+        :param weight: weight of the object (w/o units)
         """
 
         # find named geometry
@@ -115,8 +115,8 @@ class simpleWing():
         """
         This function gets the wing parameters from the given VSP model.
 
-        :param_wingName: wing title in VSP
-        :param_weight: weight of the object (w/o units)
+        :param wingName: wing title in VSP
+        :param weight: weight of the object (w/o units)
         """
 
         # find named wing
@@ -143,14 +143,14 @@ class simpleWing():
         This function updates the airfoil of the simplewing. It supports
         NACA airfoils at the root and tip or af files at the root and tip.
 
-        :param_rootNACA: flag for a NACA 4 series vs airfoil file at root
-        :param_tipNACA: flag for a NACA 4 series vs airfoil file at tip
-        :param_rootNACAthick: T/C of NACA 4 series
-        :param_tipNACAthick: T/C of NACA 4 series
-        :param_newRootFoil: af file path for root
-        :param_newTipFoil: af file path for tip
-        :param_rootChord: new root chord
-        :param_tipChord: new tip chord
+        :param rootNACA: flag for a NACA 4 series vs airfoil file at root
+        :param tipNACA: flag for a NACA 4 series vs airfoil file at tip
+        :param rootNACAthick: T/C of NACA 4 series
+        :param tipNACAthick: T/C of NACA 4 series
+        :param newRootFoil: af file path for root
+        :param newTipFoil: af file path for tip
+        :param rootChord: new root chord
+        :param tipChord: new tip chord
         """
 
         # update root
