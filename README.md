@@ -24,9 +24,9 @@ and perform simple parameterized analysis and aero simulations on them.
 
 #### BADS Features: 
 - vehicle features import
-- weight and balance/CG calculation
+- CG/static margin calculation
 - tail/canard/wing sizing
-    - simple and complex wing import
+    - simple wing import and updating
 
 ## OpenAeroVTOL
 [OAV Readme](OAV/README.md)
