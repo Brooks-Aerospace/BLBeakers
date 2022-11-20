@@ -22,6 +22,7 @@ Notes:
 
 import openvsp as vsp
 import os
+import numpy as np
 
 
 class VSPCraft():
@@ -50,9 +51,6 @@ class VSPCraft():
         """
         This function saves the file.
         """
-        #filename = VSPCraft._cleanPath(vsp.GetVSPFileName())
-        print("Saving file to: ")
-        print(vsp.GetVSPFileName())
         vsp.WriteVSPFile(vsp.GetVSPFileName(), vsp.SET_ALL)
 
     @staticmethod
@@ -93,8 +91,8 @@ class craftObject:
         """
         This function creates the craft object.
 
-        :param_objectName: object title in VSP
-        :param_weight: weight of the object (w/o units)
+        :param objectName: object title in VSP
+        :param weight: weight of the object (w/o units)
         """
 
         # find named geometry
@@ -102,10 +100,10 @@ class craftObject:
 
         # sets craft object params
         self.weight = weight
-        self.position = []
-        self.position.append(vsp.GetParmVal(self.craftObject,"X_Rel_Location","XForm"))
-        self.position.append(vsp.GetParmVal(self.craftObject,"Y_Rel_Location","XForm"))
-        self.position.append(vsp.GetParmVal(self.craftObject,"Z_Rel_Location","XForm"))
+        self.position = np.array([0., 0., 0.])
+        self.position[0] = vsp.GetParmVal(self.craftObject,"X_Rel_Location","XForm")
+        self.position[1] = vsp.GetParmVal(self.craftObject,"Y_Rel_Location","XForm")
+        self.position[2] = vsp.GetParmVal(self.craftObject,"Z_Rel_Location","XForm")
 
 class simpleWing():
     """
@@ -118,8 +116,8 @@ class simpleWing():
         """
         This function gets the wing parameters from the given VSP model.
 
-        :param_wingName: wing title in VSP
-        :param_weight: weight of the object (w/o units)
+        :param wingName: wing title in VSP
+        :param weight: weight of the object (w/o units)
         """
 
         # find named wing
@@ -127,10 +125,10 @@ class simpleWing():
 
         # sets wing params
         self.weight = weight
-        self.position = []
-        self.position.append(vsp.GetParmVal(self.simpleWing,"X_Rel_Location","XForm"))
-        self.position.append(vsp.GetParmVal(self.simpleWing,"Y_Rel_Location","XForm"))
-        self.position.append(vsp.GetParmVal(self.simpleWing,"Z_Rel_Location","XForm"))
+        self.position = np.array([0., 0., 0.])
+        self.position[0] = vsp.GetParmVal(self.simpleWing,"X_Rel_Location","XForm")
+        self.position[1] = vsp.GetParmVal(self.simpleWing,"Y_Rel_Location","XForm")
+        self.position[2] = vsp.GetParmVal(self.simpleWing,"Z_Rel_Location","XForm")
         self.span = vsp.GetParmVal(self.simpleWing,"TotalSpan","WingGeom")
         self.area = vsp.GetParmVal(self.simpleWing,"TotalArea","WingGeom")
         self.incidence = vsp.GetParmVal(self.simpleWing,"Twist","XSec_0")
@@ -140,30 +138,99 @@ class simpleWing():
         self.twist = vsp.GetParmVal(self.simpleWing,"Twist","XSec_1")
         self.dihedral = vsp.GetParmVal(self.simpleWing,"Dihedral","XSec_1")
 
-    def updateAirfoils(self, rootNACA:bool, tipNACA:bool, rootNACAthick:float, tipNACAthick:float,
-                        newRootFoil:str, newTipFoil:str, rootChord:float, tipChord:float):
+    def updateAirfoils(self, rootNACAthick, tipNACAthick, newRootFoil,
+                        newTipFoil, rootChord, tipChord):
         """
         This function updates the airfoil of the simplewing. It supports
         NACA airfoils at the root and tip or af files at the root and tip.
 
-        :param_rootNACA: flag for a NACA 4 series vs airfoil file at root
-        :param_tipNACA: flag for a NACA 4 series vs airfoil file at tip
-        :param_rootNACAthick: T/C of NACA 4 series
-        :param_tipNACAthick: T/C of NACA 4 series
-        :param_newRootFoil: af file path for root
-        :param_newTipFoil: af file path for tip
-        :param_rootChord: new root chord
-        :param_tipChord: new tip chord
+        :param rootNACAthick: float, T/C of NACA 4 series (0 - 1)
+        :param tipNACAthick: float, T/C of NACA 4 series (0 - 1)
+        :param newRootFoil: str, af file path for root
+        :param newTipFoil: str, af file path for tip
+        :param rootChord: float, new root chord
+        :param tipChord: float, new tip chord
         """
 
-        # update root
-        # check NACA flag
-        if rootNACA == True:
+        # check if updating root to naca
+        if rootNACAthick != None:
+            # range error
+            if rootNACAthick > 1 or rootNACAthick < 0:
+                raise("Thickness must be between 0 and 1")
+
             # do 4 series update
             vsp.ChangeXSecShape(vsp.GetXSecSurf(self.simpleWing, 1), 0, vsp.XS_FOUR_SERIES)
-
             vsp.Update()
-            VSPCraft.save()
+
+            # set thickness
+            vsp.SetParmVal(self.simpleWing, "ThickChord", "XSecCurve_0", rootNACAthick)
+            vsp.Update()
+
+        # check if updating root to af file
+        elif newRootFoil != None:
+            # type error
+            if type(newRootFoil) != str:
+                raise("AF File path must be a string")
+
+            # do af file update
+            vsp.ChangeXSecShape(vsp.GetXSecSurf(self.simpleWing, 1), 0, vsp.XS_FILE_AIRFOIL)
+            vsp.Update()
+
+            # clean and set file
+            file = VSPCraft._cleanPath(newRootFoil)
+            vsp.ReadFileAirfoil(vsp.GetXSec(vsp.GetXSecSurf(self.simpleWing, 1), 0), file)
+            vsp.Update()
+
+        # update root chord
+        if rootChord != None:
+            # type error
+            if type(rootChord) != float:
+                raise("Chord must be a float")
+            
+            # set root chord to correct value
+            vsp.SetParmVal(self.simpleWing, "Root_Chord", "XSec_1", rootChord)
+            vsp.Update()
+
+        # check if updating tip to naca
+        if tipNACAthick != None:
+            # range error
+            if tipNACAthick > 1 or tipNACAthick < 0:
+                raise("Thickness must be between 0 and 1")
+
+            # do 4 series update
+            vsp.ChangeXSecShape(vsp.GetXSecSurf(self.simpleWing, 1), 1, vsp.XS_FOUR_SERIES)
+            vsp.Update()
+
+            # set thickness
+            vsp.SetParmVal(self.simpleWing, "ThickChord", "XSecCurve_1", tipNACAthick)
+            vsp.Update()
+
+        # check if updating tip to af file
+        elif newTipFoil != None:
+            # type error
+            if type(newTipFoil) != str:
+                raise("AF File path must be a string")
+
+            # do af file update
+            vsp.ChangeXSecShape(vsp.GetXSecSurf(self.simpleWing, 1), 1, vsp.XS_FILE_AIRFOIL)
+            vsp.Update()
+
+            # clean and set file
+            file = VSPCraft._cleanPath(newTipFoil)
+            vsp.ReadFileAirfoil(vsp.GetXSec(vsp.GetXSecSurf(self.simpleWing, 1), 1), file)
+            vsp.Update()
+
+        # update tip chord
+        if tipChord != None:
+            # type error
+            if type(rootChord) != float:
+                raise("Chord must be a float")
+            
+            # set tip chord to correct value
+            vsp.SetParmVal(self.simpleWing, "Tip_Chord", "XSec_1", tipChord)
+            vsp.Update()
+
+        VSPCraft.save()
 
 
 # test script, only activates when this file is run
@@ -175,7 +242,8 @@ if __name__ == "__main__":
 
     wing = simpleWing(wingName="mainwing", weight=100)
 
-    wing.updateAirfoils(True, False, 12, None, None, None, None, None)
+    # wing.updateAirfoils(None, .15, "~/BrooksAeroDesignSuite/OpenVSP/AF_Files/NACA23015.af", None, 5., None)
+    # wing.updateAirfoils(0.11, None, None, None, None, None)
 
     # print(wing.area)
     # print(wing.dihedral)
