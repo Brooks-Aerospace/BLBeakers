@@ -226,7 +226,7 @@ class simpleWing():
             if type(rootChord) != float:
                 raise("Chord must be a float")
             
-            # set root chord to correct value
+            # set tip chord to correct value
             vsp.SetParmVal(self.simpleWing, "Tip_Chord", "XSec_1", tipChord)
             vsp.Update()
 
