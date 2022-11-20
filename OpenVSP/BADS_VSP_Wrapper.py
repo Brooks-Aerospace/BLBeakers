@@ -191,6 +191,45 @@ class simpleWing():
             vsp.SetParmVal(self.simpleWing, "Root_Chord", "XSec_1", rootChord)
             vsp.Update()
 
+        # check if updating tip to naca
+        if tipNACAthick != None:
+            # range error
+            if tipNACAthick > 1 or tipNACAthick < 0:
+                raise("Thickness must be between 0 and 1")
+
+            # do 4 series update
+            vsp.ChangeXSecShape(vsp.GetXSecSurf(self.simpleWing, 1), 1, vsp.XS_FOUR_SERIES)
+            vsp.Update()
+
+            # set thickness
+            vsp.SetParmVal(self.simpleWing, "ThickChord", "XSecCurve_1", tipNACAthick)
+            vsp.Update()
+
+        # check if updating tip to af file
+        elif newTipFoil != None:
+            # type error
+            if type(newTipFoil) != str:
+                raise("AF File path must be a string")
+
+            # do af file update
+            vsp.ChangeXSecShape(vsp.GetXSecSurf(self.simpleWing, 1), 1, vsp.XS_FILE_AIRFOIL)
+            vsp.Update()
+
+            # clean and set file
+            file = VSPCraft._cleanPath(newTipFoil)
+            vsp.ReadFileAirfoil(vsp.GetXSec(vsp.GetXSecSurf(self.simpleWing, 1), 1), file)
+            vsp.Update()
+
+        # update tip chord
+        if tipChord != None:
+            # type error
+            if type(rootChord) != float:
+                raise("Chord must be a float")
+            
+            # set root chord to correct value
+            vsp.SetParmVal(self.simpleWing, "Tip_Chord", "XSec_1", tipChord)
+            vsp.Update()
+
         VSPCraft.save()
 
 
@@ -203,7 +242,7 @@ if __name__ == "__main__":
 
     wing = simpleWing(wingName="mainwing", weight=100)
 
-    wing.updateAirfoils(None, None, "~/BrooksAeroDesignSuite/OpenVSP/AF_Files/NACA23015.af", None, 5., None)
+    # wing.updateAirfoils(None, .15, "~/BrooksAeroDesignSuite/OpenVSP/AF_Files/NACA23015.af", None, 5., None)
     # wing.updateAirfoils(0.11, None, None, None, None, None)
 
     # print(wing.area)
