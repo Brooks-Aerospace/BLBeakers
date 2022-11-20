@@ -152,8 +152,7 @@ class simpleWing():
         :param tipChord: float, new tip chord
         """
 
-        # update root
-        # check NACA flag
+        # check if updating root to naca
         if rootNACAthick != None:
             # range error
             if rootNACAthick > 1 or rootNACAthick < 0:
@@ -167,6 +166,7 @@ class simpleWing():
             vsp.SetParmVal(self.simpleWing, "ThickChord", "XSecCurve_0", rootNACAthick)
             vsp.Update()
 
+        # check if updating root to af file
         elif newRootFoil != None:
             # type error
             if type(newRootFoil) != str:
@@ -181,6 +181,7 @@ class simpleWing():
             vsp.ReadFileAirfoil(vsp.GetXSec(vsp.GetXSecSurf(self.simpleWing, 1), 0), file)
             vsp.Update()
 
+        # update root chord
         if rootChord != None:
             # type error
             if type(rootChord) != float:
