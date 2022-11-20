@@ -181,6 +181,15 @@ class simpleWing():
             vsp.ReadFileAirfoil(vsp.GetXSec(vsp.GetXSecSurf(self.simpleWing, 1), 0), file)
             vsp.Update()
 
+        if rootChord != None:
+            # type error
+            if type(rootChord) != float:
+                raise("Chord must be a float")
+            
+            # set root chord to correct value
+            vsp.SetParmVal(self.simpleWing, "Root_Chord", "XSec_1", rootChord)
+            vsp.Update()
+
         VSPCraft.save()
 
 
@@ -193,7 +202,7 @@ if __name__ == "__main__":
 
     wing = simpleWing(wingName="mainwing", weight=100)
 
-    wing.updateAirfoils(None, None, "~/BrooksAeroDesignSuite/OpenVSP/AF_Files/NACA23015.af", None, None, None)
+    wing.updateAirfoils(None, None, "~/BrooksAeroDesignSuite/OpenVSP/AF_Files/NACA23015.af", None, 5., None)
     # wing.updateAirfoils(0.11, None, None, None, None, None)
 
     # print(wing.area)
