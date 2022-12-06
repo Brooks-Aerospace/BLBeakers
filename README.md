@@ -14,6 +14,14 @@ the user must obtain a license on their own to use it.
 Below are the descriptions of each tool. See the <README.md> files linked
 below for detailed information (including licensing info
 and download locations).
+
+## Custom Tools
+[Custom Tools Readme](CUSTOM/README.md)
+#### Description:
+A collection of custom calculators and other tools developed by BADS.
+
+#### List of Tools:
+- Seaplane takeoff distance estimator
                                       
 ## OpenVSP
 [OpenVSP Readme](OpenVSP/README.md)
@@ -24,9 +32,9 @@ and perform simple parameterized analysis and aero simulations on them.
 
 #### BADS Features: 
 - vehicle features import
-- weight and balance/CG calculation
+- CG/static margin calculation
 - tail/canard/wing sizing
-    - simple and complex wing import
+    - simple wing import and updating
 
 ## OpenAeroVTOL
 [OAV Readme](OAV/README.md)
@@ -41,6 +49,14 @@ and perform simple parameterized analysis and aero simulations on them.
 DFDC (ducted fan design code) is an analysis tool for axisymmetric ducted
 rotor design and analysis. It can be used to generate geometries of ducted
 rotors and perform analysis and geometric development on them.
+
+#### BADS Features:
+coming soon
+
+## XFOIL
+[XFOIL Readme](XFOIL/README.md)
+#### Description:
+XFOIL is a subsonic airfoil design and optimization tool.
 
 #### BADS Features:
 coming soon
