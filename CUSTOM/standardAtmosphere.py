@@ -52,7 +52,7 @@ class standardAtmosphere():
 
         return tempR
 
-    def tempRatio(self, alt:float):
+    def tR(self, alt:float):
         """
         This function returns the temperature ratio
         of a US standard day at the requested altitude.
@@ -62,27 +62,27 @@ class standardAtmosphere():
         :rtype: float
         """
         if alt <= 36089:
-            tempRatio = self.tempR(alt)/518.67
+            tR = self.tempR(alt)/518.67
         elif alt <= 65617:
-            tempRatio = 389.99/518.67
+            tR = 389.99/518.67
 
-        return tempRatio
+        return tR
 
-    def presRatio(self, alt:float):
+    def pR(self, alt:float):
         """
         This function returns the pressure ratio
         of a US standard day at the requested altitude.
 
         :param alt: float, altitude in feet
-        :returns presRatio: pressure ratio
+        :returns pR: pressure ratio
         :rtype: float
         """
         if alt <= 36089:
-            presRatio = self.tempRatio(alt)**5.2562
+            pR = self.tempRatio(alt)**5.2562
         elif alt <= 65617:
-            presRatio = 0.223361*np.exp((-0.0481/1000)*(alt - 36089))
+            pR = 0.223361*np.exp((-0.0481/1000)*(alt - 36089))
 
-        return presRatio
+        return pR
 
     def pres(self, alt:float):
         """
@@ -94,9 +94,9 @@ class standardAtmosphere():
         :rtype: float
         """
         if alt <= 36089:
-            pres = 2116.22*(self.tempRatio(alt))**5.2562
+            pres = 2116.22*(self.tR(alt))**5.2562
         elif alt <= 65617:
-            pres = 2116.22*self.presRatio(alt)
+            pres = 2116.22*self.pR(alt)
 
         return pres
 
@@ -110,23 +110,23 @@ class standardAtmosphere():
         :rtype: float
         """
         if alt <= 65617:
-            rho = 0.0023769*(self.presRatio(alt)/self.tempRatio(alt))
+            rho = 0.0023769*(self.pR(alt)/self.tR(alt))
 
         return rho
 
-    def densRatio(self, alt:float):
+    def dR(self, alt:float):
         """
         This function returns the density ratio
         of a US standard day at the requested altitude.
 
         :param alt: float, altitude in feet
-        :returns densRatio: density ratio
+        :returns dR: density ratio
         :rtype: float
         """
         if alt <= 65617:
-            densRatio = self.presRatio(alt)/self.tempRatio(alt)
+            dR = self.pR(alt)/self.tR(alt)
 
-        return densRatio
+        return dR
 
     def sqrtDR(self, alt:float):
         """
@@ -137,69 +137,80 @@ class standardAtmosphere():
         :returns sqrtDr: density ratio
         :rtype: float
         """
-        sqrtDR = np.sqrt(self.densRatio(alt))
+        if alt <= 65617:
+            sqrtDR = np.sqrt(self.dR(alt))
 
         return sqrtDR
 
-    def QMS():
+    def qMs(self, alt:float):
         """
-        This function returns the temperature in deg F
+        This function returns the dynamic pressure over
+        mach squared of a US standard day at the requested altitude.
+
+        :param alt: float, altitude in feet
+        :returns qms: Q/M^2 in lbs/ft^2
+        :rtype: float
+        """
+        if alt <= 65617:
+            qMs = 1481.354*self.pR(alt)
+
+        return qMs
+
+    def spW(self, alt:float):
+        """
+        This function returns the specific weight in lbs/ft^3
         of a US standard day at the requested altitude.
 
         :param alt: float, altitude in feet
-        :returns tempF, units: temp in deg F
+        :returns spw: specific weight in lbs/ft^3
         :rtype: float
-        :returns units: units of value
-        :rtype: string
         """
+        if alt <= 65617:
+            spW = 32.1740484*self.rho(alt)
 
-    def SPW():
+        return spW
+
+    def Aspeed(self, alt:float):
         """
-        This function returns the temperature in deg F
+        This function returns the speed of sound in ft/s
         of a US standard day at the requested altitude.
 
         :param alt: float, altitude in feet
-        :returns tempF, units: temp in deg F
+        :returns Aspeed: speed of sound in ft/s
         :rtype: float
-        :returns units: units of value
-        :rtype: string
         """
+        if alt <= 65617:
+            Aspeed = 1116.45*np.sqrt(self.tR(alt))
 
-    def Aspeed():
+        return Aspeed
+
+    def velA(self, alt:float):
         """
-        This function returns the temperature in deg F
+        This function returns the speed of sound in kts
         of a US standard day at the requested altitude.
 
         :param alt: float, altitude in feet
-        :returns tempF, units: temp in deg F
+        :returns velA: speed of sound in kts
         :rtype: float
-        :returns units: units of value
-        :rtype: string
         """
+        if alt <= 65617:
+            velA = (3600/6076.4)*self.Aspeed(alt)
 
-    def velA():
+        return velA
+
+    def VRkin(self, alt:float):
         """
-        This function returns the temperature in deg F
-        of a US standard day at the requested altitude.
+        This function returns the kinematic viscosity
+        in ft^2/s of a US standard day at the requested altitude.
 
         :param alt: float, altitude in feet
-        :returns tempF, units: temp in deg F
+        :returns VRkin: kinematic viscosity in ft^2/s
         :rtype: float
-        :returns units: units of value
-        :rtype: string
         """
+        if alt <= 65617:
+            VRkin = ((0.226968*10**(-7))*(self.tempR(alt)**1.5))/(self.rho(alt)*(self.tempR(alt)+198.73))
 
-    def VRkin():
-        """
-        This function returns the temperature in deg F
-        of a US standard day at the requested altitude.
-
-        :param alt: float, altitude in feet
-        :returns tempF, units: temp in deg F
-        :rtype: float
-        :returns units: units of value
-        :rtype: string
-        """
+        return VRkin
 
     def convertUnits():
         """
@@ -212,3 +223,10 @@ class standardAtmosphere():
         :returns units: units of value
         :rtype: string
         """
+
+
+# testing
+if __name__ == "__main__":
+    print(standardAtmosphere.tempF(1000))
+    print(standardAtmosphere.tempF(42000))
+    
