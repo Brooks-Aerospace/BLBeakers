@@ -15,6 +15,7 @@ It includes the properties:
 
 import numpy as np
 
+
 class standardAtmosphere():
     """
     This class contains all of the following standard atmosphere
@@ -78,7 +79,7 @@ class standardAtmosphere():
         :rtype: float
         """
         if alt <= 36089:
-            pR = self.tempRatio(alt)**5.2562
+            pR = self.tR(alt)**5.2562
         elif alt <= 65617:
             pR = 0.223361*np.exp((-0.0481/1000)*(alt - 36089))
 
@@ -227,6 +228,40 @@ class standardAtmosphere():
 
 # testing
 if __name__ == "__main__":
-    print(standardAtmosphere.tempF(1000))
-    print(standardAtmosphere.tempF(42000))
-    
+    std = standardAtmosphere()
+
+    # verified
+    # print(std.tempF(1000))
+    # print(std.tempR(1000))
+    # print(std.tempF(42000))
+    # print(std.tempR(42000))
+
+    # verified
+    # print(std.tR(1000))
+    # print(std.tR(42000))
+    # print(std.pR(1000))
+    # print(std.pR(42000))
+
+    # verified
+    # print(std.pres(1000))
+    # print(std.pres(42000))
+    # print(std.rho(1000))
+    # print(std.rho(42000))
+
+    # verified
+    # print(std.dR(1000))
+    # print(std.dR(42000))
+    # print(std.sqrtDR(1000))
+    # print(std.sqrtDR(42000))
+    # print(std.qMs(1000))
+    # print(std.qMs(42000))
+
+    # verified
+    # print(std.spW(1000))
+    # print(std.spW(42000))
+    # print(std.Aspeed(1000))
+    # print(std.Aspeed(42000))
+    # print(std.velA(1000))
+    # print(std.velA(42000))
+    # print(std.VRkin(1000))
+    # print(std.VRkin(42000))
