@@ -1,4 +1,4 @@
-# Brooks Aerospace Design Suite VSP API Commands
+# Standard Atmosphere Class
 # Slade Brooks
 # spbrooks4@gmail.com
 # i stole dis from class
@@ -10,7 +10,19 @@ atmospheric property is its own function within the class, and there is
 an SI conversion function as well.
 
 It includes the properties:
-
+    temp (F)
+    temp (R)
+    temp ratio
+    pres ratio
+    pressure
+    density
+    density ratio
+    sqrt density ratio
+    q over mach^2
+    specific weight
+    speed of sound (ft/s)
+    speed of sound (kts)
+    kinematic viscosity
 """
 
 import numpy as np
@@ -19,9 +31,23 @@ import numpy as np
 class standardAtmosphere():
     """
     This class contains all of the following standard atmosphere
-    properties at a requested altitude and a unit conversion function.
+    functions at a requested altitude and a unit conversion function.
 
-
+    :Methods:
+        tempF
+        tempR
+        tR
+        pR
+        pres
+        rho
+        dR
+        sqrtDR
+        qMs
+        spW
+        Aspeed
+        velA
+        VRkin
+        convertUnits
     """
 
     def tempF(self, alt:float):
