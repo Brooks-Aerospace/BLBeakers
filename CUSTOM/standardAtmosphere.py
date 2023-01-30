@@ -55,3 +55,5 @@ class standardAtmosphere():
     def velA():
 
     def VRkin():
+
+    def convertUnits():
