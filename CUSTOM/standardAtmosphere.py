@@ -249,8 +249,33 @@ class standardAtmosphere():
         :rtype: float
         """
 
-        freedomUnits[0] # value
-        freedomUnits[1] # units
+        val = freedomUnits[0]
+        units = freedomUnits[1]
+
+        if units == "deg F":
+            val = (val - 32)*(5/9)
+            units = "deg C"
+        elif units == "deg R":
+            val = (val-491.67)*(5/9)
+            units = "deg C"
+        elif units == "lbs/ft^2":
+            val = val*47.880172
+            units = "Pa"
+        elif units == "slugs/ft^3":
+            val = val*515.379
+            units = "kg/m^3"
+        elif units == "lbs/ft^3":
+            val = val*16.0185
+            units = "kg/m^3"
+        elif units == "ft/s":
+            val = val/3.281
+            units = "m/s"
+        elif units == "kts":
+            val = val/1.94384
+            units = "m/s"
+        elif units == "ft^2/s":
+            val = val/10.764
+            units = "m^2/s"
 
 
 # testing
