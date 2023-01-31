@@ -61,7 +61,7 @@ class standardAtmosphere():
         """
         tempF = self.tempR(alt) - 459.67
 
-        return tempF
+        return tempF, "deg F"
 
     def tempR(self, alt:float):
         """
@@ -255,6 +255,9 @@ class standardAtmosphere():
 # testing
 if __name__ == "__main__":
     std = standardAtmosphere()
+
+    print(std.tempF(1000)[0])
+    print(std.tempF(1000)[1])
 
     # verified
     # print(std.tempF(1000))
