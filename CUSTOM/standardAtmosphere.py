@@ -77,7 +77,7 @@ class standardAtmosphere():
         elif alt <= 65617:
             tempR = 389.99
 
-        return tempR
+        return tempR, "deg R"
 
     def tR(self, alt:float):
         """
@@ -125,7 +125,7 @@ class standardAtmosphere():
         elif alt <= 65617:
             pres = 2116.22*self.pR(alt)
 
-        return pres
+        return pres, "lbs/ft^2"
 
     def rho(self, alt:float):
         """
@@ -139,7 +139,7 @@ class standardAtmosphere():
         if alt <= 65617:
             rho = 0.0023769*(self.pR(alt)/self.tR(alt))
 
-        return rho
+        return rho, "slugs/ft^3"
 
     def dR(self, alt:float):
         """
@@ -181,7 +181,7 @@ class standardAtmosphere():
         if alt <= 65617:
             qMs = 1481.354*self.pR(alt)
 
-        return qMs
+        return qMs, "lbs/ft^2"
 
     def spW(self, alt:float):
         """
@@ -195,7 +195,7 @@ class standardAtmosphere():
         if alt <= 65617:
             spW = 32.1740484*self.rho(alt)
 
-        return spW
+        return spW, "lbs/ft^3"
 
     def Aspeed(self, alt:float):
         """
@@ -209,7 +209,7 @@ class standardAtmosphere():
         if alt <= 65617:
             Aspeed = 1116.45*np.sqrt(self.tR(alt))
 
-        return Aspeed
+        return Aspeed, "ft/s"
 
     def velA(self, alt:float):
         """
@@ -223,7 +223,7 @@ class standardAtmosphere():
         if alt <= 65617:
             velA = (3600/6076.4)*self.Aspeed(alt)
 
-        return velA
+        return velA, "kts"
 
     def VRkin(self, alt:float):
         """
@@ -237,18 +237,16 @@ class standardAtmosphere():
         if alt <= 65617:
             VRkin = ((0.226968*10**(-7))*(self.tempR(alt)**1.5))/(self.rho(alt)*(self.tempR(alt)+198.73))
 
-        return VRkin
+        return VRkin, "ft^2/s"
 
-    def convertUnits():
+    def convertUnits(freedomUnits):
         """
-        This function returns the temperature in deg F
-        of a US standard day at the requested altitude.
+        This function converts the input value to SI
+        units given its value and units.
 
-        :param alt: float, altitude in feet
-        :returns tempF, units: temp in deg F
+        :param freedomUnits: standardAtmosphere function @ requested altitude
+        :returns convertedVal: converted units in SI
         :rtype: float
-        :returns units: units of value
-        :rtype: string
         """
 
 
