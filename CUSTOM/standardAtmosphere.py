@@ -249,6 +249,9 @@ class standardAtmosphere():
         :rtype: float
         """
 
+        freedomUnits[0] # value
+        freedomUnits[1] # units
+
 
 # testing
 if __name__ == "__main__":
