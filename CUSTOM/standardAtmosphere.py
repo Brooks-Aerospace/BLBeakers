@@ -239,7 +239,7 @@ class standardAtmosphere():
 
         return VRkin, "ft^2/s"
 
-    def convertUnits(freedomUnits):
+    def convertUnits(self, freedomUnits):
         """
         This function converts the input value to SI
         units given its value and units.
@@ -282,8 +282,9 @@ class standardAtmosphere():
 if __name__ == "__main__":
     std = standardAtmosphere()
 
-    print(std.tempF(1000)[0])
-    print(std.tempF(1000)[1])
+    temp = std.tempF(1000)
+    # print(temp)
+    #print(std.convertUnits(temp))
 
     # verified
     # print(std.tempF(1000))
