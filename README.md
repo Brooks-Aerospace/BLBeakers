@@ -21,7 +21,11 @@ and download locations).
 A collection of custom calculators and other tools developed by BADS.
 
 #### List of Tools:
-- Seaplane takeoff distance estimator
+- standard atmosphere calculator
+- vehicle design file creator
+- aircraft performance analyzer
+- aircraft sizing tools and planform plotting
+- wing PLLT analysis
                                       
 ## OpenVSP
 [OpenVSP Readme](OpenVSP/README.md)
@@ -31,10 +35,7 @@ aircraft geometry tool. It can be used to generate models of aircraft
 and perform simple parameterized analysis and aero simulations on them.       
 
 #### BADS Features: 
-- vehicle features import
-- CG/static margin calculation
-- tail/canard/wing sizing
-    - simple wing import and updating
+- vehicle design file to VSP
 
 ## OpenAeroVTOL
 [OAV Readme](OAV/README.md)
