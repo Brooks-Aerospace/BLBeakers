@@ -25,6 +25,8 @@ A collection of custom calculators and other tools developed by BADS.
 - vehicle design file creator
 - aircraft performance analyzer
 - aircraft sizing tools and planform plotting
+- aircraft weight prediction tools
+- aircraft CG/static margin tool
 - wing PLLT analysis
                                       
 ## OpenVSP
