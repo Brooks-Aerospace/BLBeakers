@@ -23,6 +23,7 @@ It includes the properties:
     specific weight
     speed of sound (ft/s)
     speed of sound (kts)
+    speed of sound ratio
     kinematic viscosity
 """
 
@@ -61,6 +62,8 @@ class standardAtmosphere():
         Returns the speed of sound at given alt in ft/s.
     velA(alt)
         Returns the speed of sound at given alt in kts.
+    aR(alt)
+        Returns the speed of sound ratio at given alt.
     VRkin(alt)
         Returns the kinematic viscosity at given alt in ft^2/s.
     convertUnits(freedomUnits)
@@ -313,6 +316,26 @@ class standardAtmosphere():
             velA = (3600/6076.4)*self.Aspeed(alt)[0]
 
         return velA, "kts"
+    
+    def aR(self, alt:float):
+        """
+        This function returns the speed of sound ratio
+        of a US standard day at the requested altitude.
+
+        Parameters
+        ----------
+        alt : float
+            Altitude in feet.
+
+        Returns
+        -------
+        aR : float
+            Speed of sound ratio.
+        """
+        if alt <= 65617:
+            aR = self.Aspeed(alt)[0]/self.Aspeed(0)[0]
+
+        return aR
 
     def VRkin(self, alt:float):
         """
