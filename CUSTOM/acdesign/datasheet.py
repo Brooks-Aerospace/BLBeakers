@@ -45,21 +45,21 @@ class acDatasheet:
         """
         
         """
-        self.cd0 = float(input("Cd0:"))
-        self.clMaxClean = float(input("CLmax clean:"))
-        self.clMaxTO = float(input("CLmax T/O:"))
-        self.clMaxLand = float(input("CLmax landing:"))
-        self.numeng = int(input("# of engines:"))
-        self.Tsls = float(input("sea level thrust:"))
-        self.SFCsls = float(input("sea level specific fuel consumption:"))
-        self.maxGs = float(input("max g's:"))
-        self.minGs = float(input("min g's:"))
-        self.maxKEAS = float(input("max KEAS:"))
-        self.maxQ = float(input("max Q:"))
-        self.maxM = float(input("max mach:"))
-        self.maxAlt = float(input("max altitude:"))
-        self.maxTOGW = float(input("max takeoff gross weight:"))
-        self.maxFuel = float(input("max fuel weight:"))
+        self.cd0 = float(input("Cd0: "))
+        self.clMaxClean = float(input("CLmax clean: "))
+        self.clMaxTO = float(input("CLmax T/O: "))
+        self.clMaxLand = float(input("CLmax landing: "))
+        self.numeng = int(input("# of engines: "))
+        self.Tsls = float(input("sea level thrust (lb): "))
+        self.SFCsls = float(input("sea level specific fuel consumption (lb/lb-hr): "))
+        self.maxGs = float(input("max g's: "))
+        self.minGs = float(input("min g's: "))
+        self.maxKEAS = float(input("max KEAS (kts): "))
+        self.maxQ = float(input("max Q (lb/ft^2): "))
+        self.maxM = float(input("max mach: "))
+        self.maxAlt = float(input("max altitude (ft): "))
+        self.maxTOGW = float(input("max takeoff gross weight (lb): "))
+        self.maxFuel = float(input("max fuel weight (lb): "))
 
     def fuseInputs(self):
         """
