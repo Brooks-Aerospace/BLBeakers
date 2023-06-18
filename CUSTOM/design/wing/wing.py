@@ -6,6 +6,11 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
+import os
+cwd = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(cwd, "..\\..\\"))
+import stdatmos.standardAtmosphere as atmos
 
 
 class wing():
@@ -14,30 +19,9 @@ class wing():
     
     Methods
     -------
+    planform(S, ar, taper, LEsweep)
+    drag()
     """
-    
-    def __init__(self):
-        """
-        , M, S, AR, ALE, tc, taper, Wo, Wf, qo, qf, Cl, alt, e)
-        Parameters
-        ----------
-        tc : float
-            Wing thickness to chord ratio.
-        Wo : float
-            Initial cruise weight.
-        Wf : float
-            Final cruise weight.
-        qo : float
-            Initial cruise dynamic pressure.
-        qf : float
-            Final cruise dynamic pressure.
-        Cl : float
-            Cruise CL.
-        alt : float
-            Cruise altitude.
-        e : float
-            Wing efficiency factor.
-        """
         
     def planform(self, S, ar, taper, LEsweep):
         """
@@ -117,13 +101,87 @@ class wing():
         
         return b, cr, ct, mac, ymac, LEsweep, qcsweep, TEsweep
    
-    def drag():
+    def drag(self, Mc, alt, tc, tcmax, Cl, e, a0L):
+        """
+        This method determines the drag characteristics of the planform determined in the planform() method. It returns
+        the 0 lift drag of the wing as well as the total drag of the wing during cruise.
+        
+        Parameters
+        ----------
+        alt : float
+            Cruise altitude.
+        e : float
+            Wing efficiency factor.
+        Mc : float
+            Cruise Mach number.
+        tc : float
+            Wing t/c.
+        tcmax : float
+            Airfoil max thickness location.
+        Cl : float
+            Cruise Cl.
+        a0L : float
+            Airfoil zero lift aoa.
+            
+        Returns
+        -------
         """
         
-        """
+        std = atmos.standardAtmosphere()
+
+        # get cruise speed and effective speed and Mach
+        Vc = Mc*std.Aspeed(alt)[0]
+        Veff = Vc*np.cos(np.radians(self.LEsweep))
+        Meff = Mc*np.cos(np.radians(self.LEsweep))
+        
+        # Reynold's num
+        Remac = Veff*self.mac/std.VRkin(alt)[0]
+        
+        # calculate Cf
+        if Remac < 1000000:
+            Cf = 1.328/np.sqrt(Remac)
+        else:
+            Cf = 0.455/((np.log10(Remac)**2.58)*(1 + 0.144*Meff**2)**0.65)
+
+        # also get Swet
+        if tc <= 0.05:
+            Swet = 2.003*self.S
+        else:
+            Swet = (1.977 + 0.52*tc)*self.S
+            
+        # calculate F??
+        tcsweep = np.degrees(np.arctan(np.tan(np.radians(self.LEsweep)) - tcmax*(2*self.cr*(1 - self.taper)/self.b)))
+        F = (1 + 0.6/tcmax*tc + 100*tc**4)*(1.34*(Mc**0.18)*np.cos(np.radians(tcsweep))**0.28)
+        
+        # now get wing CD0
+        Cd0 = Cf*Swet*F/self.S
+        
+        # get beta if beta can exist
+        if Meff < 1:
+            B = np.sqrt(1 - Meff**2)
+            
+        # calc Cla
+        CLa = np.pi/180*2*np.pi*self.ar/(2 + np.sqrt(4 + self.ar**2*B**2*(1 + np.tan(np.radians(tcsweep))**2/B**2)))
+        
+        # get Clo
+        CLo = -CLa*a0L
+        
+        # now get the trim CL
+        atrim = (Cl - CLo)/CLa
+        CLtrim = CLo + CLa*atrim
+        
+        # get K
+        K = 1/(np.pi*self.ar*e)
+        
+        # get total CD and then total drag
+        Cd = Cd0 + K*CLtrim**2
+        drag = Cd*self.S*std.qMs(alt)[0]*Mc**2
+        
+        return drag
 
 
 if __name__ == "__main__":
     wing = wing()
-    print(wing.planform(178.5, 6, 1, 0))
-    plt.show()
+    print(wing.planform(714.3, 8, .35, 31.5))
+    print(wing.drag(0.82, 36000, 0.12, 0.4, 0.3171, 0.8, -1.33))
+    # plt.show()
