@@ -20,7 +20,9 @@ class wing():
     Methods
     -------
     planform(S, ar, taper, LEsweep)
-    drag()
+        Returns plot of wing planform, b, cr, ct, mac, ymac, LEsweep, qcsweep, and TEsweep.
+    drag(Mc, alt, tc, tcmax, Cl, e, a0L)
+        Returns wing total drag and Cd0.
     """
         
     def planform(self, S, ar, taper, LEsweep):
@@ -104,7 +106,7 @@ class wing():
     def drag(self, Mc, alt, tc, tcmax, Cl, e, a0L):
         """
         This method determines the drag characteristics of the planform determined in the planform() method. It returns
-        the 0 lift drag of the wing as well as the total drag of the wing during cruise.
+        the 0 lift drag coefficient of the wing as well as the total drag of the wing during cruise.
         
         Parameters
         ----------
@@ -125,6 +127,10 @@ class wing():
             
         Returns
         -------
+        drag : float
+            Total wing drag.
+        Cd0 : float
+            Wing zero lift drag coefficient.
         """
         
         std = atmos.standardAtmosphere()
