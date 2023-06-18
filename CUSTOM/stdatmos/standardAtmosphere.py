@@ -3,29 +3,6 @@
 # spbrooks4@gmail.com
 # i stole dis from class (notes)
 
-"""
-This code is a class called standardAtmosphere. It performs calculations
-and returns standard atmosphere values at a specific altitude. Each
-atmospheric property is its own function within the class, and there is
-an SI conversion function as well. The calculations are valid up until
-65,617 feet.
-
-It includes the properties:
-    temp (F)
-    temp (R)
-    temp ratio
-    pres ratio
-    pressure
-    density
-    density ratio
-    sqrt density ratio
-    q over mach^2
-    specific weight
-    speed of sound (ft/s)
-    speed of sound (kts)
-    speed of sound ratio
-    kinematic viscosity
-"""
 
 import numpy as np
 
