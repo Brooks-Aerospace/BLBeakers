@@ -177,7 +177,7 @@ class wing():
         Cd = Cd0 + K*CLtrim**2
         drag = Cd*self.S*std.qMs(alt)[0]*Mc**2
         
-        return drag
+        return drag, Cd0
 
 
 if __name__ == "__main__":
