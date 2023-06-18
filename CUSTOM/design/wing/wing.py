@@ -21,18 +21,8 @@ class wing():
         , M, S, AR, ALE, tc, taper, Wo, Wf, qo, qf, Cl, alt, e)
         Parameters
         ----------
-        M : float
-            Cruise Mach number.
-        S : float
-            Wing area.
-        AR : float
-            Wing aspect ratio.
-        ALE : float
-            Leading edge sweep angle.
         tc : float
             Wing thickness to chord ratio.
-        taper : float
-            Wing taper ratio.
         Wo : float
             Initial cruise weight.
         Wf : float
@@ -105,16 +95,29 @@ class wing():
         xs = np.array([0, cr, cr + b/2*np.tan(np.radians(TEsweep)), b/2*np.tan(np.radians(LEsweep)), 0])
         ys = np.array([0, 0, b/2, b/2, 0])
         plt.plot(xs, ys, "k-")
-        plt.xlim([0, xs[2] + 1])
+        plt.xlim([-1, xs[2] + 1])
         plt.ylim([0, ys[2] + 1])
         plt.gca().set_aspect("equal")
         plt.grid()
         plt.xlabel("Chordwise Location (ft)")
         plt.ylabel("Spanwise Location (ft)")
         
-        return b, cr, ct, mac, ymac, LEsweep, qcsweep, TEsweep
+        # save wing info
+        self.S = S
+        self.ar = ar
+        self.taper = taper
+        self.LEsweep = LEsweep
+        self.b = b
+        self.cr = cr
+        self.ct = ct
+        self.mac = mac
+        self.ymac = ymac
+        self.qcsweep = qcsweep
+        self.TEsweep = TEsweep
         
-    def viscDrag():
+        return b, cr, ct, mac, ymac, LEsweep, qcsweep, TEsweep
+   
+    def drag():
         """
         
         """
@@ -122,5 +125,5 @@ class wing():
 
 if __name__ == "__main__":
     wing = wing()
-    print(wing.planform(714.3, 8, 0.35, 31.5))
+    print(wing.planform(178.5, 6, 1, 0))
     plt.show()
