@@ -14,13 +14,12 @@ import stdatmos.standardAtmosphere as atmos
 
 class itertow():
     """
-    This class contains a function to iterate specific fuel consumption to achieve an aircraft weight breakdown
-    throughout a mission.
+    This class contains functions to achieve an aircraft weight breakdown throughout a simple mission.
     
     Methods
     -------
     itertow()
-        Returns TSFC and weight at each portion of the mission.
+        Returns weight at each portion of the mission.
     """
     
     def itertow(self, Mc, rnge, alt, payload, tsfc, ar, sf, loitert, reserve, trapped):
