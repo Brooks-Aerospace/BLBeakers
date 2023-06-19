@@ -5,6 +5,7 @@
 
 
 import numpy as np
+import pandas as pd
 import sys
 import os
 cwd = os.path.dirname(os.path.abspath(__file__))
@@ -22,15 +23,12 @@ class itertow():
         Returns TSFC and weight at each portion of the mission.
     """
     
-    def itertow(self, guess, Mc, rnge, alt, payload, thrust, ar, sf, loiter, reserve, trapped):
+    def itertow(self, Mc, rnge, alt, payload, tsfc, ar, sf, loitert, reserve, trapped):
         """
-        This method iteratively determines the TSFC required for a given mission, reserve, and gross weight and returns
-        it and the aircraft weight at each phase in flight.
+        This method determines the aircraft weight at each phase in flight.
         
         Parameters
         ----------
-        guess : float
-            MTOGW first guess.
         Mc : float
             Cruise Mach number.
         rnge : float
@@ -39,13 +37,13 @@ class itertow():
             Cruise altitude.
         payload : float
             Aircraft payload.
-        thrust : float
-            Aircraft thrust.
+        tsfc : float
+            Thrust specific fuel consumption.
         ar : float
             Wing aspect ratio.
         sf : float
             Aircraft structure factor.
-        loiter : float
+        loitert : float
             Reserve loiter time (mins).
         reserve : float
             Reserve fuel percentage.
@@ -54,43 +52,88 @@ class itertow():
 
         Returns
         -------
+        df : pd.dataframe
+            Pandas dataframe containing results arrays.
         """
         
-        # start tsfc at 0
-        tsfc = 0
-        WTOf = np.empty(7)
-        i = 0
+        # initialize lists
+        WTOf = np.zeros(5)
+        WTOest = np.zeros(5)
+        EWsurp = np.zeros(5)
+        wTO = np.zeros(5)
+        caccel = np.zeros(5)
+        cruise = np.zeros(5)
+        land = np.zeros(5)
+        Wtf = np.zeros(5)
+        EWavail = np.zeros(5)
+        reqEW = np.zeros(5)
+        loiter = np.zeros(5)
+        i = 1
         
-        # iterate until guess agrees with estimate
-        while WTOf[i] != guess:
-            # initialize lists
-            WTOest = np.empty(7)
-            EWsurp = np.empty(7)
-            wTO = np.empty(7)
-            caccel = np.empty(7)
-            cruise = np.empty(7)
-            land = np.empty(7)
-            Wtf = np.empty(7)
-            EWavail = np.empty(7)
-            reqEW = np.empty(7)
-            
-            # do 1 iteration
-            WTOest[0] = 100000
-            wTO[0] = 0.975*WTOest[0]
-            if Mc < 1:
-                caccel[0] = (1 - 0.04*Mc)*wTO[0]
-                LoD = 10 + ar
+        # do 1 iteration
+        WTOest[0] = 100000
+        wTO[0] = 0.975*WTOest[0]
+        if Mc < 1:
+            caccel[0] = (1 - 0.04*Mc)*wTO[0]
+            LoD = 10 + ar
+        else:
+            caccel[0] = (0.96 - 0.03*(Mc - 1))*wTO[0]
+            LoD = 11*(1/Mc)**0.5
+        cruise[0] = caccel[0]/np.exp(rnge*tsfc*6080/(LoD*Mc*atmos.standardAtmosphere().Aspeed(alt)[0]*3600))
+        loiter[0] = cruise[0]/np.exp((loitert*tsfc)/(LoD*60))
+        land[0] = loiter[0]*0.975
+        Wtf[0] = (WTOest[0] - land[0])*(1 + (trapped + reserve)/100)
+        EWavail[0] = WTOest[0] - Wtf[0] - payload
+        reqEW[0] = WTOest[0]*sf
+        WTOf[0] = Wtf[0] + reqEW[0] + payload
+        EWsurp[0] = WTOest[0] - WTOf[0]
+        
+        # iterate until the surplus is 0
+        while EWsurp[i - 1] != 0:
+            if i==5:
+                print("Too many iterations - check values")
+                break
             else:
-                caccel[0] = (0.96 - 0.03*(Mc - 1))*wTO[0]
-                LoD = 11*(1/Mc)**0.5
-            cruise[0] = caccel[0]/np.exp(rnge*tsfc*6080/(LoD*Mc*atmos.standardAtmosphere.Aspeed(alt)[0]*3600))
-            loiter[0] = cruise[0]/np.exp((loiter*tsfc)/(LoD*60))
-            land[0] = loiter[0]*0.975
-            Wtf[0] = (WTOest[0] - land[0])*(1 + (trapped + reserve)/100)
-            EWavail[0] = WTOest[0] - Wtf[0] - payload
-            reqEW[0] = WTOest[0]*sf
-            WTOf[0] = Wtf[0] + reqEW[0] + payload
-            EWsurp[0] = WTOest[0] - WTOf[0]
-            
-            # iterate until the surplus is 0
-            #while EWsurp != 0:
+                if i >= 2:
+                    WTOest[i] = WTOest[i - 1] - EWsurp[i - 1]/((EWsurp[i - 1] - EWsurp[i - 2])/(WTOest[i - 1] - WTOest[i - 2]))
+                elif i == 1:
+                    WTOest[i] = WTOest[i - 1] - EWsurp[i - 1]
+                
+                wTO[i] = 0.975*WTOest[i]
+                if Mc < 1:
+                    caccel[i] = (1 - 0.04*Mc)*wTO[i]
+                else:
+                    caccel[i] = (0.96 - 0.03*(Mc - 1))*wTO[i]
+                cruise[i] = caccel[i]/np.exp(rnge*tsfc*6080/(LoD*Mc*atmos.standardAtmosphere().Aspeed(alt)[0]*3600))
+                loiter[i] = cruise[i]/np.exp((loitert*tsfc)/(LoD*60))
+                land[i] = loiter[i]*0.975
+                Wtf[i] = (WTOest[i] - land[i])*(1 + (trapped + reserve)/100)
+                EWavail[i] = WTOest[i] - Wtf[i] - payload
+                reqEW[i] = WTOest[i]*sf
+                WTOf[i] = Wtf[i] + reqEW[i] + payload
+                EWsurp[i] = WTOest[i] - WTOf[i]
+                i += 1
+        
+        # output results
+        df = pd.DataFrame({
+                "TO Weight Est.": WTOest,
+                "TO Weight Final": WTOf,
+                "Surplus EW": EWsurp,
+                "Startup/TO": wTO,
+                "Climb and Accel": caccel,
+                "Cruise": cruise,
+                "Loiter": loiter,
+                "Land": land,
+                "Total Fuel Weight": Wtf,
+                "Avail. EW": EWavail,
+                "Req. EW": reqEW
+            })
+        pd.options.display.float_format = "{:.2f}".format
+        print(df)
+        
+        return df
+
+
+if __name__ == "__main__":
+    itertow = itertow()
+    itertow.itertow(.82, 3800, 36000, 2600, 0.65, 8, 0.6, 45, 5, 1)
