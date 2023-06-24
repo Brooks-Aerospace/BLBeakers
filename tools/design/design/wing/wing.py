@@ -6,7 +6,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-import utils.stdatmos as atmos
+from utils.stdatmos import stdatmos
 
 
 class wing():
@@ -130,15 +130,15 @@ class wing():
         """
         
         # set up standard atmosphere
-        std = atmos.stdatmos()
+        std = stdatmos.stdatmos()
 
         # get cruise speed and effective speed and Mach
-        Vc = Mc*std.Aspeed(alt)[0]
+        Vc = Mc*std.Aspeed(alt)
         Veff = Vc*np.cos(np.radians(self.LEsweep))
         Meff = Mc*np.cos(np.radians(self.LEsweep))
         
         # Reynold's num
-        Remac = Veff*self.mac/std.VRkin(alt)[0]
+        Remac = Veff*self.mac/std.VRkin(alt)
         
         # calculate Cf
         if Remac < 1000000:
@@ -178,7 +178,7 @@ class wing():
         
         # get total CD and then total drag
         Cd = Cd0 + K*CLtrim**2
-        drag = Cd*self.S*std.qMs(alt)[0]*Mc**2
+        drag = Cd*self.S*std.qMs(alt)*Mc**2
         
         return drag, Cd0
 
