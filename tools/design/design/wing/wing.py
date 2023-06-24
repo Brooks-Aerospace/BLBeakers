@@ -181,6 +181,28 @@ class wing():
         drag = Cd*self.S*std.qMs(alt)*Mc**2
         
         return drag, Cd0
+    
+    
+    def wingload(self, itertow):
+        """
+        This method determines the wingloading throughout a simple mission.
+        
+        Parameters
+        ----------
+        itertow : pd.DataFrame
+            Dataframe of itertow solution from itertow method in weights.py.
+        """
+        
+    
+    def groundroll(self, wingload):
+        """
+        This method determines the takeoff and landing distance of an aircraft.
+        
+        Parameters
+        ----------
+        wingload : pd.DataFrame
+            Dataframe of wingload solution from wingload method in wing.py.
+        """
 
 
 if __name__ == "__main__":
