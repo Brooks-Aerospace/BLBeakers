@@ -16,61 +16,8 @@ below for detailed information (including licensing info
 and download locations).
 
 ## Custom Tools
-[Custom Tools Readme](CUSTOM/README.md)
+[Custom Tools Readme](tools/README.md)
 #### Description:
 A collection of custom calculators and other tools developed by BADS.
 
 #### List of Tools:
-- standard atmosphere calculator
-- vehicle design file creator
-- aircraft performance analyzer
-- aircraft sizing tools and planform plotting
-- aircraft weight prediction tools
-- aircraft CG/static margin tool
-- wing PLLT analysis
-                                      
-## OpenVSP
-[OpenVSP Readme](OpenVSP/README.md)
-#### Description:
-OpenVSP (vehicle sketch pad) is a low-fidelity, open source, parametric
-aircraft geometry tool. It can be used to generate models of aircraft
-and perform simple parameterized analysis and aero simulations on them.       
-
-#### BADS Features: 
-- vehicle design file to VSP
-
-## OpenAeroVTOL
-[OAV Readme](OAV/README.md)
-#### Description:
-
-#### BADS Features:
-- software download and GUI easy zip
-
-## DFDC
-[DFDC Readme](DFDC/README.md)
-#### Description:
-DFDC (ducted fan design code) is an analysis tool for axisymmetric ducted
-rotor design and analysis. It can be used to generate geometries of ducted
-rotors and perform analysis and geometric development on them.
-
-#### BADS Features:
-coming soon
-
-## XFOIL
-[XFOIL Readme](XFOIL/README.md)
-#### Description:
-XFOIL is a subsonic airfoil design and optimization tool.
-
-#### BADS Features:
-coming soon
-
-## Flightstream
-[Flightstream Readme](Flightstream/README.MD)
-#### Description:
-Flightstream is a medium-fidelity aircraft analysis tool. It can perform
-medium fidelity aerodynamic analysis on complex aircraft designs with high
-accuracy in a fraction of the time of CFD. It supports CAD geometry and has
-built in meshing for ease of setup.
-
-#### BADS Features:
-coming soon
