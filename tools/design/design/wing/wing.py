@@ -194,7 +194,7 @@ class wing():
         """
         
     
-    def groundroll(self, wingload):
+    def groundroll(self, wingload, CLmaxs, thrust):
         """
         This method determines the takeoff and landing distance of an aircraft.
         
@@ -202,6 +202,10 @@ class wing():
         ----------
         wingload : pd.DataFrame
             Dataframe of wingload solution from wingload method in wing.py.
+        CLmaxs : np.ndarray
+            Array of takeoff, landing CL max values.
+        thrust : np.ndarray
+            Aircraft thrust available.
         """
 
 
