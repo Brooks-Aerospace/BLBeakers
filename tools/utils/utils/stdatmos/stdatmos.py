@@ -5,13 +5,12 @@
 
 
 import numpy as np
+import utils.units.units as uu
 
 
-class standardAtmosphere():
+class stdatmos():
     """
-    This class contains all of the following
-    standard atmosphere functions at a requested
-    altitude and a unit conversion function.
+    This class contains all of the following standard atmosphere functions at a requested altitude.
 
     Methods
     -------
@@ -43,14 +42,11 @@ class standardAtmosphere():
         Returns the speed of sound ratio at given alt.
     VRkin(alt)
         Returns the kinematic viscosity at given alt in ft^2/s.
-    convertUnits(freedomUnits)
-        Converts the standard atmosphere metric to SI units.
     """
 
     def tempF(self, alt:float):
         """
-        This function returns the temperature in deg F
-        of a US standard day at the requested altitude.
+        This function returns the temperature in deg F of a US standard day at the requested altitude.
 
         Parameters
         ----------
@@ -62,14 +58,13 @@ class standardAtmosphere():
         tempF : float
             Temperature in deg F.
         """
-        tempF = self.tempR(alt)[0] - 459.67
+        tempF = uu.r2degF(self.tempR(alt))
 
-        return tempF, "deg F"
+        return tempF
 
     def tempR(self, alt:float):
         """
-        This function returns the temperature in deg R
-        of a US standard day at the requested altitude.
+        This function returns the temperature in deg R of a US standard day at the requested altitude.
 
         Parameters
         ----------
@@ -86,12 +81,11 @@ class standardAtmosphere():
         elif alt <= 65617:
             tempR = 389.99
 
-        return tempR, "deg R"
+        return tempR
 
     def tR(self, alt:float):
         """
-        This function returns the temperature ratio
-        of a US standard day at the requested altitude.
+        This function returns the temperature ratio of a US standard day at the requested altitude.
 
         Parameters
         ----------
@@ -104,7 +98,7 @@ class standardAtmosphere():
             Temperature ratio.
         """
         if alt <= 36089:
-            tR = self.tempR(alt)[0]/518.67
+            tR = self.tempR(alt)/518.67
         elif alt <= 65617:
             tR = 389.99/518.67
 
@@ -112,8 +106,7 @@ class standardAtmosphere():
 
     def pR(self, alt:float):
         """
-        This function returns the pressure ratio
-        of a US standard day at the requested altitude.
+        This function returns the pressure ratio of a US standard day at the requested altitude.
 
         Parameters
         ----------
@@ -134,8 +127,7 @@ class standardAtmosphere():
 
     def pres(self, alt:float):
         """
-        This function returns the pressure in lbs/ft^2
-        of a US standard day at the requested altitude.
+        This function returns the pressure in lbs/ft^2 of a US standard day at the requested altitude.
 
         Parameters
         ----------
@@ -152,12 +144,11 @@ class standardAtmosphere():
         elif alt <= 65617:
             pres = 2116.22*self.pR(alt)
 
-        return pres, "lbs/ft^2"
+        return pres
 
     def rho(self, alt:float):
         """
-        This function returns the density in slugs/ft^3
-        of a US standard day at the requested altitude.
+        This function returns the density in slugs/ft^3 of a US standard day at the requested altitude.
 
         Parameters
         ----------
@@ -172,12 +163,11 @@ class standardAtmosphere():
         if alt <= 65617:
             rho = 0.0023769*(self.pR(alt)/self.tR(alt))
 
-        return rho, "slugs/ft^3"
+        return rho
 
     def dR(self, alt:float):
         """
-        This function returns the density ratio
-        of a US standard day at the requested altitude.
+        This function returns the density ratio of a US standard day at the requested altitude.
 
         Parameters
         ----------
@@ -196,8 +186,7 @@ class standardAtmosphere():
 
     def sqrtDR(self, alt:float):
         """
-        This function returns the square root of the density
-        ratio of a US standard day at the requested altitude.
+        This function returns the square root of the density ratio of a US standard day at the requested altitude.
 
         Parameters
         ----------
@@ -216,8 +205,7 @@ class standardAtmosphere():
 
     def qMs(self, alt:float):
         """
-        This function returns the dynamic pressure over
-        mach squared of a US standard day at the requested altitude.
+        This function returns the dynamic pressure over mach squared of a US standard day at the requested altitude.
 
         Parameters
         ----------
@@ -232,12 +220,11 @@ class standardAtmosphere():
         if alt <= 65617:
             qMs = 1481.354*self.pR(alt)
 
-        return qMs, "lbs/ft^2"
+        return qMs
 
     def spW(self, alt:float):
         """
-        This function returns the specific weight in lbs/ft^3
-        of a US standard day at the requested altitude.
+        This function returns the specific weight in lbs/ft^3 of a US standard day at the requested altitude.
 
         Parameters
         ----------
@@ -250,14 +237,13 @@ class standardAtmosphere():
             Specific weight in lbs/ft^3.
         """
         if alt <= 65617:
-            spW = 32.1740484*self.rho(alt)[0]
+            spW = 32.1740484*self.rho(alt)
 
-        return spW, "lbs/ft^3"
+        return spW
 
     def Aspeed(self, alt:float):
         """
-        This function returns the speed of sound in ft/s
-        of a US standard day at the requested altitude.
+        This function returns the speed of sound in ft/s of a US standard day at the requested altitude.
 
         Parameters
         ----------
@@ -272,12 +258,11 @@ class standardAtmosphere():
         if alt <= 65617:
             Aspeed = 1116.45*np.sqrt(self.tR(alt))
 
-        return Aspeed, "ft/s"
+        return Aspeed
 
     def velA(self, alt:float):
         """
-        This function returns the speed of sound in kts
-        of a US standard day at the requested altitude.
+        This function returns the speed of sound in kts of a US standard day at the requested altitude.
 
         Parameters
         ----------
@@ -290,14 +275,13 @@ class standardAtmosphere():
             Speed of sound in kts.
         """
         if alt <= 65617:
-            velA = (3600/6076.4)*self.Aspeed(alt)[0]
+            velA = (3600/6076.4)*self.Aspeed(alt)
 
-        return velA, "kts"
+        return velA
     
     def aR(self, alt:float):
         """
-        This function returns the speed of sound ratio
-        of a US standard day at the requested altitude.
+        This function returns the speed of sound ratio of a US standard day at the requested altitude.
 
         Parameters
         ----------
@@ -310,14 +294,13 @@ class standardAtmosphere():
             Speed of sound ratio.
         """
         if alt <= 65617:
-            aR = self.Aspeed(alt)[0]/self.Aspeed(0)[0]
+            aR = self.Aspeed(alt)/self.Aspeed(0)
 
         return aR
 
     def VRkin(self, alt:float):
         """
-        This function returns the kinematic viscosity
-        in ft^2/s of a US standard day at the requested altitude.
+        This function returns the kinematic viscosity in ft^2/s of a US standard day at the requested altitude.
 
         Parameters
         ----------
@@ -330,64 +313,17 @@ class standardAtmosphere():
             Kinematic viscosity in ft^2/s.
         """
         if alt <= 65617:
-            VRkin = ((0.226968*10**(-7))*(self.tempR(alt)[0]**1.5))/(self.rho(alt)[0]*(self.tempR(alt)[0]+198.73))
+            VRkin = ((0.226968*10**(-7))*(self.tempR(alt)**1.5))/(self.rho(alt)*(self.tempR(alt)+198.73))
 
-        return VRkin, "ft^2/s"
-
-    def convertUnits(self, freedomUnits):
-        """
-        This function converts the input value to SI
-        units given its value and units.
-
-        Parameters
-        ----------
-        freedomUnits : function
-            standardAtmosphere function at requested alt.
-
-        Returns
-        -------
-        convertedVal : float
-            Covnerted units in SI.
-        """
-
-        val = freedomUnits[0]
-        units = freedomUnits[1]
-
-        if units == "deg F":
-            val = (val - 32)*(5/9)
-            units = "deg C"
-        elif units == "deg R":
-            val = (val-491.67)*(5/9)
-            units = "deg C"
-        elif units == "lbs/ft^2":
-            val = val*47.880172
-            units = "Pa"
-        elif units == "slugs/ft^3":
-            val = val*515.379
-            units = "kg/m^3"
-        elif units == "lbs/ft^3":
-            val = val*16.0185
-            units = "kg/m^3"
-        elif units == "ft/s":
-            val = val/3.281
-            units = "m/s"
-        elif units == "kts":
-            val = val/1.94384
-            units = "m/s"
-        elif units == "ft^2/s":
-            val = val/10.764
-            units = "m^2/s"
-
-        return val, units
+        return VRkin
 
 
 # testing
 if __name__ == "__main__":
-    std = standardAtmosphere()
+    std = stdatmos()
 
     temp = std.tempF(1000)
-    print(temp[0])
-    print(std.convertUnits(temp))
+    print(temp)
 
     # verified
     # print(std.tempF(1000))

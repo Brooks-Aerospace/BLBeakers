@@ -6,7 +6,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-import utils.utils.stdatmos as atmos
+import utils.stdatmos as atmos
 
 
 class wing():
@@ -128,6 +128,9 @@ class wing():
         Cd0 : float
             Wing zero lift drag coefficient.
         """
+        
+        # set up standard atmosphere
+        std = atmos.stdatmos()
 
         # get cruise speed and effective speed and Mach
         Vc = Mc*std.Aspeed(alt)[0]
