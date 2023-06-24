@@ -1,4 +1,4 @@
-# Brooks Aero Design Suite
+# BrooksLabs Beakers
 
 ---=== Welcome to the Brooks Aerospace Design Suite! ===---
 
