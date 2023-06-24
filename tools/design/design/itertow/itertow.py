@@ -6,11 +6,7 @@
 
 import numpy as np
 import pandas as pd
-import sys
-import os
-cwd = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.join(cwd, "..\\..\\"))
-import stdatmos.standardAtmosphere as atmos
+import utils.stdatmos as atmos
 
 class itertow():
     """
@@ -69,6 +65,8 @@ class itertow():
         loiter = np.zeros(5)
         i = 1
         
+        std = atmos.standardAtmosphere()
+        
         # do 1 iteration
         WTOest[0] = 100000
         wTO[0] = 0.975*WTOest[0]
@@ -78,7 +76,7 @@ class itertow():
         else:
             caccel[0] = (0.96 - 0.03*(Mc - 1))*wTO[0]
             LoD = 11*(1/Mc)**0.5
-        cruise[0] = caccel[0]/np.exp(rnge*tsfc*6080/(LoD*Mc*atmos.standardAtmosphere().Aspeed(alt)[0]*3600))
+        cruise[0] = caccel[0]/np.exp(rnge*tsfc*6080/(LoD*Mc*std.Aspeed(alt)[0]*3600))
         loiter[0] = cruise[0]/np.exp((loitert*tsfc)/(LoD*60))
         land[0] = loiter[0]*0.975
         Wtf[0] = (WTOest[0] - land[0])*(1 + (trapped + reserve)/100)
@@ -103,7 +101,7 @@ class itertow():
                     caccel[i] = (1 - 0.04*Mc)*wTO[i]
                 else:
                     caccel[i] = (0.96 - 0.03*(Mc - 1))*wTO[i]
-                cruise[i] = caccel[i]/np.exp(rnge*tsfc*6080/(LoD*Mc*atmos.standardAtmosphere().Aspeed(alt)[0]*3600))
+                cruise[i] = caccel[i]/np.exp(rnge*tsfc*6080/(LoD*Mc*std.Aspeed(alt)[0]*3600))
                 loiter[i] = cruise[i]/np.exp((loitert*tsfc)/(LoD*60))
                 land[i] = loiter[i]*0.975
                 Wtf[i] = (WTOest[i] - land[i])*(1 + (trapped + reserve)/100)

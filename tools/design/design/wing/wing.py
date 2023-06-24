@@ -6,11 +6,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-import sys
-import os
-cwd = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.join(cwd, "..\\..\\"))
-import stdatmos.standardAtmosphere as atmos
+import utils.utils.stdatmos as atmos
 
 
 class wing():
@@ -132,8 +128,6 @@ class wing():
         Cd0 : float
             Wing zero lift drag coefficient.
         """
-        
-        std = atmos.standardAtmosphere()
 
         # get cruise speed and effective speed and Mach
         Vc = Mc*std.Aspeed(alt)[0]
