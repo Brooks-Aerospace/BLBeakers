@@ -7,6 +7,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from utils.stdatmos import stdatmos
+import pandas as pd
 
 
 class wing():
@@ -162,6 +163,8 @@ class wing():
         # get beta if beta can exist
         if Meff < 1:
             B = np.sqrt(1 - Meff**2)
+        else:
+            raise Exception("Cruise speed is supersonic and idk what to do :(")
             
         # calc Cla
         CLa = np.pi/180*2*np.pi*self.ar/(2 + np.sqrt(4 + self.ar**2*B**2*(1 + np.tan(np.radians(tcsweep))**2/B**2)))
@@ -185,13 +188,24 @@ class wing():
     
     def wingload(self, itertow):
         """
-        This method determines the wingloading throughout a simple mission.
+        This method determines the wing loading throughout a simple mission.
         
         Parameters
         ----------
         itertow : pd.DataFrame
             Dataframe of itertow solution from itertow method in weights.py.
+            
+        Returns
+        -------
+        WSs : np.ndarray
+            Numpy array of takeoff, cruise start, cruise end, and landing wing loadings.
         """
+       
+        WSs = np.empty(4)
+        
+        # convert df to array
+        weights = itertow.to_numpy(dtype="float 64")
+        
         
     
     def groundroll(self, wingload, CLmaxs, thrust):
@@ -201,7 +215,7 @@ class wing():
         Parameters
         ----------
         wingload : pd.DataFrame
-            Dataframe of wingload solution from wingload method in wing.py.
+            Numpy array of wingload solution from wingload method in wing.py.
         CLmaxs : np.ndarray
             Array of takeoff, landing CL max values.
         thrust : np.ndarray

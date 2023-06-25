@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-setup(name = "tools",
+setup(name = "design",
     version = "0.0.1",
     description = "aircraft design tools",
     author = "Slade Brooks",
