@@ -89,8 +89,7 @@ class weights():
         # iterate until the surplus is 0
         while EWsurp[i - 1] != 0:
             if i==5:
-                print("Too many iterations - check values")
-                break
+                raise Exception("Too many iterations - check values")
             else:
                 if i >= 2:
                     WTOest[i] = WTOest[i - 1] - EWsurp[i - 1]/((EWsurp[i - 1] - EWsurp[i - 2])/(WTOest[i - 1] - WTOest[i - 2]))
