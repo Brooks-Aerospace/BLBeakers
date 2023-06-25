@@ -201,10 +201,25 @@ class wing():
             Numpy array of takeoff, cruise start, cruise end, and landing wing loadings.
         """
        
-        WSs = np.empty(4)
+        WSs = np.zeros(4)
         
         # convert df to array
-        weights = itertow.to_numpy(dtype="float 64")
+        itertows = itertow.to_numpy()
+        
+        # find last one with actual values and save
+        i = 1
+        flag = True
+        while flag == True:
+            if itertows[-i, :].any() > 0.1:
+                weights = itertows[-i, :]
+                flag = False
+            i += 1
+            
+        # set T/O and landing wingloading
+        WSs[0] = weights[1]/self.S
+        WSs[3] = weights[6]/self.S
+        
+        return WSs
         
         
     
