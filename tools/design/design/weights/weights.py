@@ -126,7 +126,6 @@ class weights():
                 "Req. EW": reqEW
             })
         pd.options.display.float_format = "{:.2f}".format
-        print(df)
         
         return df
 
