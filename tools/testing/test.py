@@ -16,3 +16,6 @@ print(wing.drag(0.82, 36000, 0.12, 0.4, 0.3171, 0.8, -1.33))
 itertow = wt.weights()
 itertows = itertow.itertow(.82, 3800, 36000, 2600, 0.65, 8, 0.6, 45, 5, 1)
 print(itertows)
+
+WSs = wing.wingload(itertows)
+print(WSs)
