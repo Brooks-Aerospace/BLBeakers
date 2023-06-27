@@ -1,7 +1,7 @@
 # testing packages and calcs
 
 
-import utils.units.units as uu
+import utils.units as uu
 from utils.stdatmos import stdatmos
 import design.wing.wing as wing
 import design.weights.weights as wt

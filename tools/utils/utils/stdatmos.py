@@ -5,7 +5,7 @@
 
 
 import numpy as np
-import utils.units.units as uu
+import utils.units as uu
 
 
 class stdatmos():
