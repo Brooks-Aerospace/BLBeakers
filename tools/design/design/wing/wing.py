@@ -131,7 +131,7 @@ class wing():
         """
         
         # set up standard atmosphere
-        std = stdatmos.stdatmos()
+        std = stdatmos()
 
         # get cruise speed and effective speed and Mach
         Vc = Mc*std.Aspeed(alt)

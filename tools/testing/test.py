@@ -3,8 +3,8 @@
 
 import utils.units as uu
 from utils.stdatmos import stdatmos
-import design.wing.wing as wing
-import design.weights.weights as wt
+import design.wing as wing
+import design.weights as wt
 import matplotlib.pyplot as plt
 
 

@@ -66,7 +66,7 @@ class weights():
         loiter = np.zeros(5)
         i = 1
         
-        std = stdatmos.stdatmos()
+        std = stdatmos()
         
         # do 1 iteration
         WTOest[0] = 100000
