@@ -14,7 +14,7 @@ class weights():
     
     Methods
     -------
-    itertow()
+    itertow(Mc, rnge, alt, payload, tsfc, ar, sf, loitert, reserve, trapped)
         Returns weight at each portion of the mission.
     """
     
