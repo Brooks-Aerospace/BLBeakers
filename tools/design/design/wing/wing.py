@@ -101,8 +101,39 @@ class wing():
         self.TEsweep = TEsweep
         
         return b, cr, ct, mac, ymac, LEsweep, qcsweep, TEsweep
-   
-    def drag(self, Mc, alt, tc, tcmax, Cl, e, a0L):
+
+
+    def cruiseCL(self, Swetref, e):
+        """
+        This method determines the cruise CL.
+        
+        Parameters
+        ----------
+        Swetref : float
+            Swet/Sref of the aircraft.
+        e : float
+            Wing efficiency factor.
+            
+        Returns
+        -------
+        cruiseCL : float
+            Cruise CL.
+        """
+        
+        # calculate Cd0
+        cd0 = 0.003*Swetref
+        
+        # get K
+        self.e = e
+        self.K = 1/(np.pi*self.ar*e)
+        
+        # determine cruise CL
+        cruiseCL = np.sqrt(cd0/(3*self.K))
+        
+        return cruiseCL
+    
+
+    def drag(self, Mc, alt, tc, tcmax, cruiseCl, a0L):
         """
         This method determines the drag characteristics of the planform determined in the planform() method. It returns
         the 0 lift drag coefficient of the wing as well as the total drag of the wing during cruise.
@@ -111,15 +142,13 @@ class wing():
         ----------
         alt : float
             Cruise altitude.
-        e : float
-            Wing efficiency factor.
         Mc : float
             Cruise Mach number.
         tc : float
             Wing t/c.
         tcmax : float
             Airfoil max thickness location.
-        Cl : float
+        cruiseCl : float
             Cruise Cl.
         a0L : float
             Airfoil zero lift aoa.
@@ -172,14 +201,11 @@ class wing():
         CLo = -CLa*a0L
         
         # now get the trim CL
-        atrim = (Cl - CLo)/CLa
+        atrim = (cruiseCl - CLo)/CLa
         CLtrim = CLo + CLa*atrim
         
-        # get K
-        K = 1/(np.pi*self.ar*e)
-        
         # get total CD and then total drag
-        Cd = Cd0 + K*CLtrim**2
+        Cd = Cd0 + self.K*CLtrim**2
         drag = Cd*self.S*std.qMs(alt)*Mc**2
         
         return drag, Cd0
@@ -198,6 +224,8 @@ class wing():
         -------
         WSs : np.ndarray
             Numpy array of takeoff, cruise start, cruise end, and landing wing loadings.
+        weights : np.ndarray
+            Numpy array of weight at each phase.
         """
        
         # initalize array
@@ -219,7 +247,7 @@ class wing():
         WSs[0] = weights[1]/self.S
         WSs[3] = weights[6]/self.S
         
-        return WSs
+        return WSs, weights
         
         
     
@@ -230,7 +258,7 @@ class wing():
         Parameters
         ----------
         wingload : np.ndarray
-            Numpy array of wingload solution from wingload method in wing.py.
+            Numpy array of wingload solution from wingload method.
         twrT : float
             Aircraft thrust to weight ratio at takeoff.
         CLmaxs : np.ndarray
