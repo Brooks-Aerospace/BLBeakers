@@ -8,6 +8,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from utils.stdatmos import stdatmos
 import pandas as pd
+# set up standard atmosphere
+std = stdatmos()
 
 
 class wing():
@@ -129,9 +131,6 @@ class wing():
         Cd0 : float
             Wing zero lift drag coefficient.
         """
-        
-        # set up standard atmosphere
-        std = stdatmos()
 
         # get cruise speed and effective speed and Mach
         Vc = Mc*std.Aspeed(alt)
@@ -201,6 +200,7 @@ class wing():
             Numpy array of takeoff, cruise start, cruise end, and landing wing loadings.
         """
        
+        # initalize array
         WSs = np.zeros(4)
         
         # convert df to array
@@ -223,19 +223,38 @@ class wing():
         
         
     
-    def groundroll(self, wingload, CLmaxs, thrust):
+    def groundroll(self, wingload, twrT, CLmaxs, alt:float=0.):
         """
         This method determines the takeoff and landing distance of an aircraft.
         
         Parameters
         ----------
-        wingload : pd.DataFrame
+        wingload : np.ndarray
             Numpy array of wingload solution from wingload method in wing.py.
+        twrT : float
+            Aircraft thrust to weight ratio at takeoff.
         CLmaxs : np.ndarray
-            Array of takeoff, landing CL max values.
-        thrust : np.ndarray
-            Aircraft thrust available.
+            Array of [takeoff, landing] CL max values.
+        alt : float
+            Field altitude.
+            
+        Returns
+        -------
+        sTO : float
+            Takeoff ground roll.
+        sL : float
+            Landing ground roll.
         """
+        
+        # determine TOP and LP
+        top = wingload[0]/(CLmaxs[0]*twrT*std.dR(alt))
+        lp = wingload[3]/(CLmaxs[1]*std.dR(alt))
+        
+        # determine takeoff roll
+        sTO = 20.9*top + 87*np.sqrt(top*twrT)
+        sL = 118*lp + 400
+        
+        return sTO, sL
 
 
 if __name__ == "__main__":
