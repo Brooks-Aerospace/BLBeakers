@@ -3,7 +3,6 @@
 # spbrooks4@gmail.com
 # this is a certified mark fellows excel sheet
 
-
 import numpy as np
 import pandas as pd
 from utils.stdatmos import stdatmos
