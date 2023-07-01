@@ -24,4 +24,6 @@ print(itertows)
 WSs = wing.wingload(itertows)
 print(WSs)
 
-# TODO: test groundroll
+# test groundroll
+To, L = wing.groundroll(WSs, 0.3548, [1.89, 2.1], 0)
+print(To, L)
