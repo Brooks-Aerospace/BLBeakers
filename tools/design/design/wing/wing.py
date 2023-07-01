@@ -3,11 +3,9 @@
 # spbrooks4@gmail.com
 # this is a certified mark fellows excel sheet
 
-
 import numpy as np
 import matplotlib.pyplot as plt
 from utils.stdatmos import stdatmos
-import pandas as pd
 # set up standard atmosphere
 std = stdatmos()
 
@@ -20,8 +18,14 @@ class wing():
     -------
     planform(S, ar, taper, LEsweep)
         Returns plot of wing planform, b, cr, ct, mac, ymac, LEsweep, qcsweep, and TEsweep.
-    drag(Mc, alt, tc, tcmax, Cl, e, a0L)
+    cruiseCL(Swetref, e)
+        Determines the cruise CL.
+    drag(Mc, alt, tc, tcmax, cruiseCl, a0L)
         Returns wing total drag and Cd0.
+    wingload(itertow)
+        Returns the wingloading and weights throughout flight.
+    groundroll(wingload, twrT, CLmaxs, alt)
+        Returns the takeoff and landing ground roll at a given altitude.
     """
         
     def planform(self, S, ar, taper, LEsweep):
