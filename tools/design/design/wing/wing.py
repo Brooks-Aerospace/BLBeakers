@@ -253,7 +253,6 @@ class wing():
         
         return WSs, weights
         
-        
     
     def groundroll(self, wingload, twrT, CLmaxs, alt:float=0.):
         """
