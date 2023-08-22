@@ -1,3 +1,4 @@
-from .wing import wing
-from .weights import weights
-from .fuse import fuse
+from .wing import *
+from .weights import *
+from .fuse import *
+from .tail import *
