@@ -8,355 +8,236 @@ import numpy as np
 import utils.units as uu
 
 
-class stdatmos():
-    """
-    This class contains all of the following standard atmosphere functions at a requested altitude.
+g0 = 9.80665                                                    # gravity (m/s^2)
+R = 8314.32                                                     # J/kmol-K
+W0 = 28.9644                                                    # kg/kmol
+ziSTD = [0., 11., 20., 32., 47., 51., 71., 84.852]              # zi for std day (km)
+ziSTD = [z*1000 for z in ziSTD]                                 # zi for std day (m)
+LiSTD = [-6.5, 0., 1., 2.8, 0., -2.8, -2]                       # Li for std day (K/km)
+LiSTD = [L/1000 for L in LiSTD]                                 # Li for std day (K/m)
+ToSTD = 288.15                                                  # T0 for std day (K)
+PoSTD = 101325.                                                 # P0 for std day (Pa)
+rhooSTD = 1.225                                                 # rho0 for std day (kg/m^3)
+aoSTD = 340.3                                                   # a0 for std day (m/s)
+# Ti at each i for std day (K)
+TiSTD = [ToSTD]
+for i in range(1, len(LiSTD)+1):
+    TiSTD.append(LiSTD[i - 1]*(ziSTD[i] - ziSTD[i - 1]) + TiSTD[i - 1])
+# Pi at each i for std day (Pa)
+PiSTD = [PoSTD]
+for k in range(1, len(LiSTD)+1):
+    if LiSTD[k - 1] != 0:
+        PiSTD.append(PiSTD[k - 1]*(TiSTD[k - 1]/TiSTD[k])**(g0*W0/(R*LiSTD[k - 1])))
+    else:
+        PiSTD.append(PiSTD[k - 1]*np.exp(-g0*W0*(ziSTD[k]-ziSTD[k - 1])/(R*TiSTD[k - 1])))
 
+
+class stdAtmos():
+    """
+    Standard atmosphere 1976 base class - valid to 86 km (282,152 ft).
+   
     Methods
     -------
-    tempF(alt)
-        Return temperature at given alt in deg F.
-    tempR(alt)
-        Return temperature at given alt in deg R.
-    tR(alt)
-        Return temp ratio at given alt.
-    pR(alt)
-        Return pressure ratio at given alt.
-    pres(alt)
-        Return pressure at given alt in lbs/ft^2.
-    rho(alt)
-        Return density at given alt in slugs/ft^3.
-    dR(alt)
-        Return density ratio at given alt.
-    sqrtDR(alt)
-        Return square root of density ratio at given alt.
-    qMs(alt)
-        Returns the Q/M^2 at given alt in lbs/ft^2.
-    spW(alt)
-        Returns the specific weight at given alt in lbs/ft^3.
-    Aspeed(alt)
-        Returns the speed of sound at given alt in ft/s.
-    velA(alt)
-        Returns the speed of sound at given alt in kts.
-    aR(alt)
-        Returns the speed of sound ratio at given alt.
-    VRkin(alt)
-        Returns the kinematic viscosity at given alt in ft^2/s.
+    T(h)
+        Returns atmospheric temperature (deg F) at h (ft).
+    P(h)
+        Returns atmospheric pressure (psf) at h (ft).
+    PR(h)
+        Returns pressure ratio at h (ft).
+    TR(h)
+        Returns temperature ratio at h (ft).
+    rho(h)
+        Returns density (slugs/ft^3) at h (ft).
+    dR(h)
+        Returns density ratio at h (ft).
+    sqrtdR(h)
+        Returns square root of density ratio at h (ft).
+    Aspeed(h)
+        Returns speed of sound (ft/s) at h (ft).
+    velA(h)
+        Returns speed of sound (kt) at h (ft).
+    aR(h)
+        Returns speed of sound ratio at h (ft).
+    qMs(h)
+        Returns Q/M^2 (lb/ft^2) at h (ft).
+    spW(h)
+        Returns specific weight (lbm/ft^3) at h (ft).
+    VRkin(h)
+        Returns kinematic viscosity (ft^2/s) at h (ft).
+    z(h)
+        Returns geopotential altitude (m) from geometric altitude (m).
     """
-
-    def tempF(self, alt:float):
+   
+    def __init__(self, zi:list=ziSTD, Li:list=LiSTD, Ti:list=TiSTD, Pi:list=PiSTD, T0:float=ToSTD, P0:float=PoSTD,
+                rho0:float=rhooSTD, a0:float=aoSTD):
         """
-        This function returns the temperature in deg F of a US standard day at the requested altitude.
-
         Parameters
         ----------
-        alt : float
-            Altitude in feet.
-        
-        Returns
-        -------
-        tempF : float
-            Temperature in deg F.
+        zi : list
+            Geo-potential altitude markers (km).
+        Li : list
+            Temperature lapse rate at each zi (K/m).
+        Ti : list
+            Temperature at each zi (K).
+        Pi : list
+            Pressure at each zi (Pa).
+        T0 : float
+            Temperature at sea level (K).
+        P0 : float
+            Pressure at sea level (Pa).
+        rho0 : float
+            Density at sea level (kg/m^3).
+        a0 : float
+            Speed of sound at sea level (m/s).
         """
-        tempF = uu.r2degF(self.tempR(alt))
-
-        return tempF
-
-    def tempR(self, alt:float):
+        self.zi = zi
+        self.Li = Li
+        self.Ti = Ti
+        self.Pi = Pi
+        self.T0 = T0
+        self.P0 = P0
+        self.rho0 = rho0
+        self.a0 = a0
+       
+   
+    def _i(self, z:float):
         """
-        This function returns the temperature in deg R of a US standard day at the requested altitude.
-
         Parameters
         ----------
-        alt : float
-            Altitude in feet.
-
+        z : float
+            Geo-potential altitude (m).
+       
         Returns
         -------
-        tempR : float
-            Temperature in deg R.
+        i : int
+            Corresponding i value.
         """
-        if alt <= 36089:
-            tempR = 518.67 - 3.566*(alt/1000)
-        elif alt <= 65617:
-            tempR = 389.99
-
-        return tempR
-
-    def tR(self, alt:float):
+        zi = [zs for zs in self.zi if z >= zs][-1]
+        i = self.zi.index(zi)
+        return i, zi
+   
+   
+    def _start(self, h:float):
         """
-        This function returns the temperature ratio of a US standard day at the requested altitude.
+        Quickly startup for doing calcs.
+        """
+        h = h*uu.ft2m
+        zh = self.z(h)
+        i, zi = self._i(zh)
+        return zh, zi, i
+   
 
+    def T(self, h:float):
+        """
+        Returns atmospheric temperature (deg F) at h (ft).
+        """
+        zh, zi, i = self._start(h)
+        T = self.Ti[i] + self.Li[i]*(zh - zi)
+        return uu.k2degF(T)
+
+
+    def P(self, h:float):
+        """
+        Returns atmospheric pressure (psf) at h (ft).
+        """
+        zh, zi, i = self._start(h)
+        if self.Li[i] != 0:
+            P = self.Pi[i]*(self.Ti[i]/(uu.degF2k(self.T(h))))**(g0*W0/(R*self.Li[i]))
+        else:
+            P = self.Pi[i]*np.exp(-(g0*W0*(zh - zi))/(R*self.Ti[i]))
+        return P*uu.pa2psf
+   
+   
+    def PR(self, h:float):
+        """
+        Returns pressure ratio at h (ft).
+        """
+        return self.P(h)/(self.P0*uu.pa2psf)
+   
+   
+    def TR(self, h:float):
+        """
+        Returns temperature ratio at h (ft).
+        """
+        return uu.degF2k(self.T(h))/self.T0
+       
+       
+    def rho(self, h:float):
+        """
+        Returns density (slugs/ft^3) at h (ft).
+        """
+        return self.rho0*(self.PR(h)/self.TR(h))*uu.kgm32slugft3
+   
+   
+    def dR(self, h:float):
+        """
+        Returns density ratio at h (ft).
+        """
+        return self.rho(h)/(self.rho0*uu.kgm32slugft3)
+   
+   
+    def sqrtdR(self, h:float):
+        """
+        Returns square root of density ratio at h (ft).
+        """
+        return np.sqrt(self.dR(h))
+   
+   
+    def Aspeed(self, h:float):
+        """
+        Returns speed of sound (ft/s) at h (ft).
+        """
+        return self.a0*np.sqrt(self.TR(h))*uu.ms2fts
+   
+   
+    def velA(self, h:float):
+        """
+        Returns speed of sound (kt) at h (ft).
+        """
+        return self.Aspeed(h)*uu.fts2kt
+   
+   
+    def aR(self, h:float):
+        """
+        Returns speed of sound ratio at h (ft).
+        """
+        return self.Aspeed(h)/(self.a0*uu.ms2fts)
+   
+   
+    def qMs(self, h:float):
+        """
+        Returns Q/M^2 (lb/ft^2) at h (ft).
+        """
+        return 1481.354*self.PR(h)
+       
+   
+    def spW(self, h:float):
+        """
+        Returns specific weight (lbm/ft^3) at h (ft).
+        """
+        return 32.1740484*self.rho(h)
+       
+   
+    def VRkin(self, h:float):
+        """
+        Returns kinematic viscosity (ft^2/s) at h (ft).
+        """
+        return ((0.226968*10**(-7))*(uu.degF2r(self.T(h))**1.5))/(self.rho(h)*(uu.degF2r(self.T(h))+198.73))
+   
+   
+    @staticmethod
+    def z(h:float):
+        """
         Parameters
         ----------
-        alt : float
-            Altitude in feet.
-
+        h : float
+            Geometric height (m).
+           
         Returns
         -------
-        tR : float
-            Temperature ratio.
+        z : float
+            Geo-potential altitude (m).
         """
-        if alt <= 36089:
-            tR = self.tempR(alt)/518.67
-        elif alt <= 65617:
-            tR = 389.99/518.67
-
-        return tR
-
-    def pR(self, alt:float):
-        """
-        This function returns the pressure ratio of a US standard day at the requested altitude.
-
-        Parameters
-        ----------
-        alt : float
-            Altitude in feet.
-
-        Returns
-        -------
-        pR : float
-            Pressure ratio.
-        """
-        if alt <= 36089:
-            pR = self.tR(alt)**5.2562
-        elif alt <= 65617:
-            pR = 0.223361*np.exp((-0.0481/1000)*(alt - 36089))
-
-        return pR
-
-    def pres(self, alt:float):
-        """
-        This function returns the pressure in lbs/ft^2 of a US standard day at the requested altitude.
-
-        Parameters
-        ----------
-        alt : float
-            Altitude in feet.
-
-        Returns
-        -------
-        pres : float
-            Pressure in lbs/ft^2.
-        """
-        if alt <= 36089:
-            pres = 2116.22*(self.tR(alt))**5.2562
-        elif alt <= 65617:
-            pres = 2116.22*self.pR(alt)
-
-        return pres
-
-    def rho(self, alt:float):
-        """
-        This function returns the density in slugs/ft^3 of a US standard day at the requested altitude.
-
-        Parameters
-        ----------
-        alt : float
-            Altitude in feet.
-
-        Returns
-        -------
-        rho : float
-            Density in slugs/ft^3.
-        """
-        if alt <= 65617:
-            rho = 0.0023769*(self.pR(alt)/self.tR(alt))
-
-        return rho
-
-    def dR(self, alt:float):
-        """
-        This function returns the density ratio of a US standard day at the requested altitude.
-
-        Parameters
-        ----------
-        alt : float
-            Altitude in feet.
-
-        Returns
-        -------
-        dR : float
-            Density ratio.
-        """
-        if alt <= 65617:
-            dR = self.pR(alt)/self.tR(alt)
-
-        return dR
-
-    def sqrtDR(self, alt:float):
-        """
-        This function returns the square root of the density ratio of a US standard day at the requested altitude.
-
-        Parameters
-        ----------
-        alt : float
-            Altitude in feet.
-
-        Returns
-        -------
-        sqrtDR : float
-            Square root of density ratio.
-        """
-        if alt <= 65617:
-            sqrtDR = np.sqrt(self.dR(alt))
-
-        return sqrtDR
-
-    def qMs(self, alt:float):
-        """
-        This function returns the dynamic pressure over mach squared of a US standard day at the requested altitude.
-
-        Parameters
-        ----------
-        alt : float
-            Altitude in feet.
-
-        Returns
-        -------
-        qMs : float
-            Q/M^2 in lbs/ft^2.
-        """
-        if alt <= 65617:
-            qMs = 1481.354*self.pR(alt)
-
-        return qMs
-
-    def spW(self, alt:float):
-        """
-        This function returns the specific weight in lbs/ft^3 of a US standard day at the requested altitude.
-
-        Parameters
-        ----------
-        alt : float
-            Altitude in feet.
-
-        Returns
-        -------
-        spW : float
-            Specific weight in lbs/ft^3.
-        """
-        if alt <= 65617:
-            spW = 32.1740484*self.rho(alt)
-
-        return spW
-
-    def Aspeed(self, alt:float):
-        """
-        This function returns the speed of sound in ft/s of a US standard day at the requested altitude.
-
-        Parameters
-        ----------
-        alt : float
-            Altitude in feet.
-
-        Returns
-        -------
-        Aspeed : float
-            Speed of sound in ft/s.
-        """
-        if alt <= 65617:
-            Aspeed = 1116.45*np.sqrt(self.tR(alt))
-
-        return Aspeed
-
-    def velA(self, alt:float):
-        """
-        This function returns the speed of sound in kts of a US standard day at the requested altitude.
-
-        Parameters
-        ----------
-        alt : float
-            Altitude in feet.
-
-        Returns
-        -------
-        velA : float
-            Speed of sound in kts.
-        """
-        if alt <= 65617:
-            velA = (3600/6076.4)*self.Aspeed(alt)
-
-        return velA
-    
-    def aR(self, alt:float):
-        """
-        This function returns the speed of sound ratio of a US standard day at the requested altitude.
-
-        Parameters
-        ----------
-        alt : float
-            Altitude in feet.
-
-        Returns
-        -------
-        aR : float
-            Speed of sound ratio.
-        """
-        if alt <= 65617:
-            aR = self.Aspeed(alt)/self.Aspeed(0)
-
-        return aR
-
-    def VRkin(self, alt:float):
-        """
-        This function returns the kinematic viscosity in ft^2/s of a US standard day at the requested altitude.
-
-        Parameters
-        ----------
-        alt : float
-            Altitude in feet.
-
-        Returns
-        -------
-        VRkin : float
-            Kinematic viscosity in ft^2/s.
-        """
-        if alt <= 65617:
-            VRkin = ((0.226968*10**(-7))*(self.tempR(alt)**1.5))/(self.rho(alt)*(self.tempR(alt)+198.73))
-
-        return VRkin
-
-
-# testing
-if __name__ == "__main__":
-    std = stdatmos()
-
-    temp = std.tempF(1000)
-    print(temp)
-
-    # verified
-    # print(std.tempF(1000))
-    # print(std.tempR(1000))
-    # print(std.tempF(42000))
-    # print(std.tempR(42000))
-
-    # verified
-    # print(std.tR(1000))
-    # print(std.tR(42000))
-    # print(std.pR(1000))
-    # print(std.pR(42000))
-
-    # verified
-    # print(std.pres(1000))
-    # print(std.pres(42000))
-    # print(std.rho(1000))
-    # print(std.rho(42000))
-
-    # verified
-    # print(std.dR(1000))
-    # print(std.dR(42000))
-    # print(std.sqrtDR(1000))
-    # print(std.sqrtDR(42000))
-    # print(std.qMs(1000))
-    # print(std.qMs(42000))
-
-    # verified
-    # print(std.spW(1000))
-    # print(std.spW(42000))
-    # print(std.Aspeed(1000))
-    # print(std.Aspeed(42000))
-    # print(std.velA(1000))
-    # print(std.velA(42000))
-    # print(std.VRkin(1000))
-    # print(std.VRkin(42000))
+        r = 6356.577*1000   # radius of earth (m)
+        z = r*h/(r + h)     # geopot height        
+        return z

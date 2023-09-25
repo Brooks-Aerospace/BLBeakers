@@ -289,6 +289,9 @@ def degF2degC(f):
 def degC2degF(c):
     return r2degF(degC2k(c) * k2r)
 
+def degF2k(f):
+    return degC2k(degF2degC(f))
+
 
 # pressure
 psi2psf = ft22in2
@@ -305,6 +308,8 @@ pa2atm = 1/atm2pa
 # densities
 kgcm2slugcf = kg2slug / (m2ft ** 3.0)
 slugcf2kgcm = 1/kgcm2slugcf
+kgm32slugft3 = 0.00194032
+slugft32kgm3 = 1/kgm32slugft3
 
 # volume
 l2in3 = 61.0237
