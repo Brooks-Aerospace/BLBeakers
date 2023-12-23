@@ -3,10 +3,11 @@
 # spbrooks4@gmail.com
 # this is a certified mark fellows excel sheet
 
-
 import numpy as np
 import matplotlib.pyplot as plt
-from utils.stdatmos import stdatmos
+from utils.stdatmos import stdAtmos
+# set up standard atmosphere
+std = stdAtmos()
 
 
 class wing():
@@ -17,8 +18,14 @@ class wing():
     -------
     planform(S, ar, taper, LEsweep)
         Returns plot of wing planform, b, cr, ct, mac, ymac, LEsweep, qcsweep, and TEsweep.
-    drag(Mc, alt, tc, tcmax, Cl, e, a0L)
+    cruiseCL(Swetref, e)
+        Determines the cruise CL.
+    drag(Mc, alt, tc, tcmax, cruiseCl, a0L)
         Returns wing total drag and Cd0.
+    wingload(itertow)
+        Returns the wingloading and weights throughout flight.
+    groundroll(wingload, twrT, CLmaxs, alt)
+        Returns the takeoff and landing ground roll at a given altitude.
     """
         
     def planform(self, S, ar, taper, LEsweep):
@@ -96,10 +103,12 @@ class wing():
         self.ymac = ymac
         self.qcsweep = qcsweep
         self.TEsweep = TEsweep
+        self.plot = np.array([xs, ys])
         
         return b, cr, ct, mac, ymac, LEsweep, qcsweep, TEsweep
-   
-    def drag(self, Mc, alt, tc, tcmax, Cl, e, a0L):
+    
+
+    def drag(self, Mc, alt, tc, tcmax, a0L, Swetref, e):
         """
         This method determines the drag characteristics of the planform determined in the planform() method. It returns
         the 0 lift drag coefficient of the wing as well as the total drag of the wing during cruise.
@@ -108,18 +117,18 @@ class wing():
         ----------
         alt : float
             Cruise altitude.
-        e : float
-            Wing efficiency factor.
         Mc : float
             Cruise Mach number.
         tc : float
             Wing t/c.
         tcmax : float
             Airfoil max thickness location.
-        Cl : float
-            Cruise Cl.
         a0L : float
             Airfoil zero lift aoa.
+        Swetref : float
+            Swet/Sref of the aircraft.
+        e : float
+            Wing efficiency factor.
             
         Returns
         -------
@@ -128,9 +137,15 @@ class wing():
         Cd0 : float
             Wing zero lift drag coefficient.
         """
+        # calculate Cd0
+        cd0 = 0.003*Swetref
         
-        # set up standard atmosphere
-        std = stdatmos.stdatmos()
+        # get K
+        self.e = e
+        self.K = 1/(np.pi*self.ar*e)
+        
+        # determine cruise CL
+        cruiseCL = np.sqrt(cd0/(3*self.K))
 
         # get cruise speed and effective speed and Mach
         Vc = Mc*std.Aspeed(alt)
@@ -162,6 +177,8 @@ class wing():
         # get beta if beta can exist
         if Meff < 1:
             B = np.sqrt(1 - Meff**2)
+        else:
+            raise Exception("Cruise speed is supersonic and idk what to do :(")
             
         # calc Cla
         CLa = np.pi/180*2*np.pi*self.ar/(2 + np.sqrt(4 + self.ar**2*B**2*(1 + np.tan(np.radians(tcsweep))**2/B**2)))
@@ -170,21 +187,11 @@ class wing():
         CLo = -CLa*a0L
         
         # now get the trim CL
-        atrim = (Cl - CLo)/CLa
+        atrim = (cruiseCL - CLo)/CLa
         CLtrim = CLo + CLa*atrim
         
-        # get K
-        K = 1/(np.pi*self.ar*e)
-        
         # get total CD and then total drag
-        Cd = Cd0 + K*CLtrim**2
+        Cd = Cd0 + self.K*CLtrim**2
         drag = Cd*self.S*std.qMs(alt)*Mc**2
         
         return drag, Cd0
-
-
-if __name__ == "__main__":
-    wing = wing()
-    print(wing.planform(714.3, 8, .35, 31.5))
-    print(wing.drag(0.82, 36000, 0.12, 0.4, 0.3171, 0.8, -1.33))
-    # plt.show()
