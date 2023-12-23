@@ -152,7 +152,7 @@ class stdAtmos():
         """
         Returns pressure ratio at h (ft).
         """
-        return self.P(h)/(self.P0*uu.pa2psf)
+        return self.P(h)/self.P(0.)
    
    
     def TR(self, h:float):
@@ -173,7 +173,7 @@ class stdAtmos():
         """
         Returns density ratio at h (ft).
         """
-        return self.rho(h)/(self.rho0*uu.kgm32slugft3)
+        return self.rho(h)/self.rho(0.)
    
    
     def sqrtdR(self, h:float):
@@ -201,7 +201,7 @@ class stdAtmos():
         """
         Returns speed of sound ratio at h (ft).
         """
-        return self.Aspeed(h)/(self.a0*uu.ms2fts)
+        return self.Aspeed(h)/self.Aspeed(0.)
    
    
     def qMs(self, h:float):
@@ -241,3 +241,57 @@ class stdAtmos():
         r = 6356.577*1000   # radius of earth (m)
         z = r*h/(r + h)     # geopot height        
         return z
+    
+
+if __name__ == "__main__":
+    test = stdAtmos()
+    h = 5000
+    print(h, "ft")
+    print("T:", test.T(h))
+    print("P:", test.P(h)/144)
+    print("TR:", test.TR(h))
+    print("PR:", test.PR(h))
+    print("rho:", test.rho(h)*10**4)
+    print("dR:", test.dR(h))
+    print("a:", test.Aspeed(h))
+    print("a kt:", test.velA(h))
+    h = 10000
+    print(h, "ft")
+    print("T:", test.T(h))
+    print("P:", test.P(h)/144)
+    print("TR:", test.TR(h))
+    print("PR:", test.PR(h))
+    print("rho:", test.rho(h)*10**4)
+    print("dR:", test.dR(h))
+    print("a:", test.Aspeed(h))
+    print("a kt:", test.velA(h))
+    h = 30000
+    print(h, "ft")
+    print("T:", test.T(h))
+    print("P:", test.P(h)/144)
+    print("TR:", test.TR(h))
+    print("PR:", test.PR(h))
+    print("rho:", test.rho(h)*10**4)
+    print("dR:", test.dR(h))
+    print("a:", test.Aspeed(h))
+    print("a kt:", test.velA(h))
+    h = 100000
+    print(h, "ft")
+    print("T:", test.T(h))
+    print("P:", test.P(h)/144)
+    print("TR:", test.TR(h))
+    print("PR:", test.PR(h))
+    print("rho:", test.rho(h)*10**4)
+    print("dR:", test.dR(h))
+    print("a:", test.Aspeed(h))
+    print("a kt:", test.velA(h))
+    h = 250000
+    print(h, "ft")
+    print("T:", test.T(h))
+    print("P:", test.P(h)/144)
+    print("TR:", test.TR(h))
+    print("PR:", test.PR(h))
+    print("rho:", test.rho(h)*10**4)
+    print("dR:", test.dR(h))
+    print("a:", test.Aspeed(h))
+    print("a kt:", test.velA(h))

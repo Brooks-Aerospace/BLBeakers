@@ -4,7 +4,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-from utils.stdatmos import stdatmos
+from utils.stdatmos import stdAtmos
 
 
 class fuse():
@@ -83,6 +83,14 @@ class fuse():
         plt.xlabel("Length (ft)")
         plt.ylabel("Height (ft)")
         
+        # store fuse info
+        self.L = L
+        self.D = D
+        self.fr = fr
+        self.plot = np.array([xs, ys])
+        self.xs = xs
+        self.Ds = Ds
+        
         return L, xs, Ds, fr, D
 
 
@@ -107,13 +115,15 @@ class fuse():
             Fuselage wetted area.
         Drag : float
             Fuselage total drag.
-        Cd0 : float
-            Equivalent CD0.
         """
         
         # get stuff from function
-        L, xs, Ds, fr, D = PSCyl
-        std = stdatmos()
+        L = PSCyl.L
+        xs = PSCyl.xs
+        Ds = PSCyl.Ds
+        fr = PSCyl.fr
+        D = PSCyl.D
+        std = stdAtmos()
         q = std.qMs(alt)*(Mc**2)
         
         # determine perimeter @ each location
@@ -152,7 +162,4 @@ class fuse():
         dw = Amax*cdw*q
         Drag += dw
         
-        # find equiv cd0
-        Cd0 = Drag/(q*S)
-        
-        return Swet, Drag, Cd0
+        return Swet, Drag

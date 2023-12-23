@@ -5,9 +5,9 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-from utils.stdatmos import stdatmos
+from utils.stdatmos import stdAtmos
 # set up standard atmosphere
-std = stdatmos()
+std = stdAtmos()
 
 
 class wing():
@@ -103,41 +103,12 @@ class wing():
         self.ymac = ymac
         self.qcsweep = qcsweep
         self.TEsweep = TEsweep
+        self.plot = np.array([xs, ys])
         
         return b, cr, ct, mac, ymac, LEsweep, qcsweep, TEsweep
-
-
-    def cruiseCL(self, Swetref, e):
-        """
-        This method determines the cruise CL.
-        
-        Parameters
-        ----------
-        Swetref : float
-            Swet/Sref of the aircraft.
-        e : float
-            Wing efficiency factor.
-            
-        Returns
-        -------
-        cruiseCL : float
-            Cruise CL.
-        """
-        
-        # calculate Cd0
-        cd0 = 0.003*Swetref
-        
-        # get K
-        self.e = e
-        self.K = 1/(np.pi*self.ar*e)
-        
-        # determine cruise CL
-        cruiseCL = np.sqrt(cd0/(3*self.K))
-        
-        return cruiseCL
     
 
-    def drag(self, Mc, alt, tc, tcmax, cruiseCl, a0L):
+    def drag(self, Mc, alt, tc, tcmax, a0L, Swetref, e):
         """
         This method determines the drag characteristics of the planform determined in the planform() method. It returns
         the 0 lift drag coefficient of the wing as well as the total drag of the wing during cruise.
@@ -152,10 +123,12 @@ class wing():
             Wing t/c.
         tcmax : float
             Airfoil max thickness location.
-        cruiseCl : float
-            Cruise Cl.
         a0L : float
             Airfoil zero lift aoa.
+        Swetref : float
+            Swet/Sref of the aircraft.
+        e : float
+            Wing efficiency factor.
             
         Returns
         -------
@@ -164,6 +137,15 @@ class wing():
         Cd0 : float
             Wing zero lift drag coefficient.
         """
+        # calculate Cd0
+        cd0 = 0.003*Swetref
+        
+        # get K
+        self.e = e
+        self.K = 1/(np.pi*self.ar*e)
+        
+        # determine cruise CL
+        cruiseCL = np.sqrt(cd0/(3*self.K))
 
         # get cruise speed and effective speed and Mach
         Vc = Mc*std.Aspeed(alt)
@@ -205,7 +187,7 @@ class wing():
         CLo = -CLa*a0L
         
         # now get the trim CL
-        atrim = (cruiseCl - CLo)/CLa
+        atrim = (cruiseCL - CLo)/CLa
         CLtrim = CLo + CLa*atrim
         
         # get total CD and then total drag
@@ -213,83 +195,3 @@ class wing():
         drag = Cd*self.S*std.qMs(alt)*Mc**2
         
         return drag, Cd0
-    
-    
-    def wingload(self, itertow):
-        """
-        This method determines the wing loading throughout a simple mission.
-        
-        Parameters
-        ----------
-        itertow : pd.DataFrame
-            Dataframe of itertow solution from itertow method in weights.py.
-            
-        Returns
-        -------
-        WSs : np.ndarray
-            Numpy array of takeoff, cruise start, cruise end, and landing wing loadings.
-        weights : np.ndarray
-            Numpy array of weight at each phase.
-        """
-       
-        # initalize array
-        WSs = np.zeros(4)
-        
-        # convert df to array
-        itertows = itertow.to_numpy()
-        
-        # find last one with actual values and save
-        i = 1
-        flag = True
-        while flag == True:
-            if itertows[-i, :].any() > 0.1:
-                weights = itertows[-i, :]
-                flag = False
-            i += 1
-            
-        # set T/O and landing wingloading
-        WSs[0] = weights[1]/self.S
-        WSs[3] = weights[6]/self.S
-        
-        return WSs, weights
-        
-    
-    def groundroll(self, wingload, twrT, CLmaxs, alt:float=0.):
-        """
-        This method determines the takeoff and landing distance of an aircraft.
-        
-        Parameters
-        ----------
-        wingload : np.ndarray
-            Numpy array of wingload solution from wingload method.
-        twrT : float
-            Aircraft thrust to weight ratio at takeoff.
-        CLmaxs : np.ndarray
-            Array of [takeoff, landing] CL max values.
-        alt : float
-            Field altitude.
-            
-        Returns
-        -------
-        sTO : float
-            Takeoff ground roll.
-        sL : float
-            Landing ground roll.
-        """
-        
-        # determine TOP and LP
-        top = wingload[0]/(CLmaxs[0]*twrT*std.dR(alt))
-        lp = wingload[3]/(CLmaxs[1]*std.dR(alt))
-        
-        # determine takeoff roll
-        sTO = 20.9*top + 87*np.sqrt(top*twrT)
-        sL = 118*lp + 400
-        
-        return sTO, sL
-
-
-if __name__ == "__main__":
-    wing = wing()
-    print(wing.planform(714.3, 8, .35, 31.5))
-    print(wing.drag(0.82, 36000, 0.12, 0.4, 0.3171, 0.8, -1.33))
-    # plt.show()
