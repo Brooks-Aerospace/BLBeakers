@@ -1,7 +1,9 @@
 # Mission Segment Definition Class
 # Slade Brooks
-# brooksl@mail.uu.edu
+# brooksl@mail.uc.edu
 
+import sys
+sys.path.append("C:\\Users\\spbro\\Documents\\BLBeakers\\tools\\")
 import performance as perf
 from utils.stdatmos import stdAtmos
 std = stdAtmos()

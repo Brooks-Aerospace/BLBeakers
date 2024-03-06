@@ -1,7 +1,9 @@
 # Aircraft Performance Calcs Class
 # Slade Brooks
-# brooksl@mail.uu.edu
+# brooksl@mail.uc.edu
 
+import sys
+sys.path.append("C:\\Users\\spbro\\Documents\\BLBeakers\\tools\\")
 from utils.stdatmos import stdAtmos
 std = stdAtmos()
 import numpy as np
